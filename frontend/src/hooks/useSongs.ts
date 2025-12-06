@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { songsApi } from '../utils/api';
+import type { Song, CreateSongData, UpdateSongData } from '../types/api';
 
 // Query keys
 export const songKeys = {
@@ -12,14 +13,14 @@ export const songKeys = {
 
 // Hooks
 export const useSongs = () => {
-  return useQuery({
+  return useQuery<Song[]>({
     queryKey: songKeys.lists(),
     queryFn: songsApi.getAll,
   });
 };
 
 export const useSong = (id: string) => {
-  return useQuery({
+  return useQuery<Song>({
     queryKey: songKeys.detail(id),
     queryFn: () => songsApi.getById(id),
     enabled: !!id,
@@ -29,7 +30,7 @@ export const useSong = (id: string) => {
 export const useCreateSong = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<Song, Error, CreateSongData>({
     mutationFn: songsApi.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: songKeys.lists() });
@@ -40,8 +41,8 @@ export const useCreateSong = () => {
 export const useUpdateSong = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => songsApi.update(id, data),
+  return useMutation<Song, Error, { id: string; data: UpdateSongData }>({
+    mutationFn: ({ id, data }) => songsApi.update(id, data),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: songKeys.lists() });
       queryClient.invalidateQueries({ queryKey: songKeys.detail(variables.id) });
@@ -52,7 +53,7 @@ export const useUpdateSong = () => {
 export const useDeleteSong = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<void, Error, string>({
     mutationFn: songsApi.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: songKeys.lists() });

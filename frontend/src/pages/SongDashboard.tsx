@@ -4,10 +4,11 @@ import { useState } from "react";
 import PageHeader from "../components/Navbar/PageHeader";
 import SongCard from "../components/SongCard";
 import CreateSongModal from "../components/CreateSongModal";
-import { ElectroSong, rockSong } from "../mocks/songs";
+import { useSongs } from "../hooks/useSongs";
+import type { Song } from "../types/api";
 
 function SongDashboard() {
-  const mockSongs = [rockSong, ElectroSong];
+  const { data: songsData, isLoading, isError } = useSongs();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCreateSong = () => {
@@ -38,18 +39,20 @@ function SongDashboard() {
             Create Song
           </Button>
         </div>
-
+        {isLoading && <p>Loading songs...</p>}
+        {isError && <p>Error loading songs.</p>}
         <List
           itemLayout="horizontal"
-          dataSource={mockSongs}
+          dataSource={songsData}
           split={false}
-          renderItem={(song, index) => (
+          renderItem={(song: Song, index) => (
             <SongCard
               key={index}
               id={song.id}
               name={song.name}
-              description={song.description}
-              totalDuration={song.totalDuration}
+              description={song.description || ''}
+              totalDuration={song.duration}
+              tags={song.tags}
             />
           )}
         />
