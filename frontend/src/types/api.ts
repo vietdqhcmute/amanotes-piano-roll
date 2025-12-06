@@ -5,9 +5,8 @@ export interface Song {
   description?: string;
   bpm?: number;
   duration: number;
-  genre?: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
   tags?: Tag[];
   tracks?: Track[];
   notes?: Note[];
@@ -18,8 +17,7 @@ export interface CreateSongData {
   description?: string;
   bpm?: number;
   duration: number;
-  genre?: string;
-  tag_ids?: number[];
+  tagIds?: number[];
 }
 
 export interface UpdateSongData extends Partial<CreateSongData> {}
@@ -28,8 +26,8 @@ export interface UpdateSongData extends Partial<CreateSongData> {}
 export interface Tag {
   id: number;
   label: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
   songs?: Song[];
 }
 
@@ -42,10 +40,10 @@ export interface UpdateTagData extends Partial<CreateTagData> {}
 // Track related types
 export interface Track {
   id: number;
-  song_id: number;
-  instrument_id: number;
-  created_at: string;
-  updated_at: string;
+  songId: number;
+  instrumentId: number;
+  createdAt: string;
+  updatedAt: string;
   instrument?: Instrument;
   notes?: Note[];
 }
@@ -53,26 +51,26 @@ export interface Track {
 export interface Instrument {
   id: number;
   label: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Note related types
 export interface Note {
   id: number;
-  song_id: number;
-  track_id: number;
+  songId: number;
+  trackId: number;
   time: number;
   description?: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
   track?: Track;
 }
 
 export interface CreateNoteData {
   time: number;
   description?: string;
-  track_id: number;
+  trackId: number;
 }
 
 export interface UpdateNoteData extends Partial<CreateNoteData> {}

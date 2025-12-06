@@ -4,7 +4,7 @@ class Api::V1::SongsController < ApplicationController
   # GET /api/v1/songs
   def index
     @songs = Song.includes(:tags).all
-    render json: @songs.as_json(
+    render_json @songs.as_json(
       include: {
         tags: { only: [:id, :label] }
       }
@@ -13,14 +13,14 @@ class Api::V1::SongsController < ApplicationController
 
   # GET /api/v1/songs/:id
   def show
-    render json: @song.as_json(
+    song = Song.includes(:tags, tracks: :instrument, notes: []).find(params[:id])
+    render_json song.as_json(
       include: {
         tags: { only: [:id, :label] },
         tracks: {
-          only: [:id, :instrument_id],
+          only: [:id],
           include: {
             instrument: { only: [:id, :label] },
-            notes: { only: [:id, :time, :description] }
           }
         },
         notes: { only: [:id, :time, :description, :track_id] }
@@ -33,18 +33,18 @@ class Api::V1::SongsController < ApplicationController
     @song = Song.new(song_params)
 
     if @song.save
-      render json: @song, status: :created
+      render_json @song, status: :created
     else
-      render json: { errors: @song.errors }, status: :unprocessable_entity
+      render_json({ errors: @song.errors }, status: :unprocessable_entity)
     end
   end
 
   # PATCH/PUT /api/v1/songs/:id
   def update
     if @song.update(song_params)
-      render json: @song
+      render_json @song
     else
-      render json: { errors: @song.errors }, status: :unprocessable_entity
+      render_json({ errors: @song.errors }, status: :unprocessable_entity)
     end
   end
 
@@ -59,7 +59,7 @@ class Api::V1::SongsController < ApplicationController
   def set_song
     @song = Song.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Song not found' }, status: :not_found
+    render_json({ error: 'Song not found' }, status: :not_found)
   end
 
   def song_params

@@ -5,7 +5,7 @@ class Api::V1::NotesController < ApplicationController
   # GET /api/v1/songs/:song_id/notes
   def index
     @notes = @song.notes.includes(:track).all
-    render json: @notes.as_json(
+    render_json @notes.as_json(
       include: {
         track: { only: [:id], include: { instrument: { only: [:id, :label] } } }
       }
@@ -14,7 +14,7 @@ class Api::V1::NotesController < ApplicationController
 
   # GET /api/v1/songs/:song_id/notes/:id
   def show
-    render json: @note.as_json(
+    render_json @note.as_json(
       include: {
         track: { only: [:id], include: { instrument: { only: [:id, :label] } } }
       }
@@ -26,18 +26,18 @@ class Api::V1::NotesController < ApplicationController
     @note = @song.notes.build(note_params)
 
     if @note.save
-      render json: @note, status: :created
+      render_json @note, status: :created
     else
-      render json: { errors: @note.errors }, status: :unprocessable_entity
+      render_json({ errors: @note.errors }, status: :unprocessable_entity)
     end
   end
 
   # PATCH/PUT /api/v1/songs/:song_id/notes/:id
   def update
     if @note.update(note_params)
-      render json: @note
+      render_json @note
     else
-      render json: { errors: @note.errors }, status: :unprocessable_entity
+      render_json({ errors: @note.errors }, status: :unprocessable_entity)
     end
   end
 
@@ -52,13 +52,13 @@ class Api::V1::NotesController < ApplicationController
   def set_song
     @song = Song.find(params[:song_id])
   rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Song not found' }, status: :not_found
+    render_json({ error: 'Song not found' }, status: :not_found)
   end
 
   def set_note
     @note = @song.notes.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Note not found' }, status: :not_found
+    render_json({ error: 'Note not found' }, status: :not_found)
   end
 
   def note_params

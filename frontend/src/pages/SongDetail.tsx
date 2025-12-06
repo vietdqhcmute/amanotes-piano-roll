@@ -3,6 +3,8 @@ import TrackRoller from "../components/SongEditor/TrackRoller";
 import { rockSong } from "../mocks/songs";
 import { convertNotesToCells, calculateTimeResolution, generateTimeLabels } from "../utils/songsUtils";
 import PageHeader from "../components/Navbar/PageHeader";
+import { useParams } from "react-router-dom";
+import { useSong } from "../hooks/useSongs";
 
 interface SongDetailProps {
   name: string;
@@ -20,6 +22,9 @@ export interface NotesProps {
 }
 
 function SongDetail() {
+  const { id } = useParams();
+  const { data: songData, isLoading, isError } = useSong(id || '');
+  console.log(songData)
   const mockSong: SongDetailProps = rockSong;
   const { name, description, totalDuration, trackLabels, notes } = mockSong;
 

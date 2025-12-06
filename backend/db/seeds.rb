@@ -65,8 +65,7 @@ song = Song.create!(
   name: "Midnight Drive",
   description: "A synthwave-inspired track with driving bassline and atmospheric pads",
   duration: 180,  # 3 minutes
-  bpm: 110,
-  genre: "Synthwave"
+  bpm: 110
 )
 
 # Add tags to song
