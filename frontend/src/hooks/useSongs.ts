@@ -56,6 +56,11 @@ export const useDeleteSong = () => {
   return useMutation<void, Error, string>({
     mutationFn: songsApi.delete,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: songKeys.all });
+      queryClient.invalidateQueries({ queryKey: songKeys.lists() });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: songKeys.all });
       queryClient.invalidateQueries({ queryKey: songKeys.lists() });
     },
   });

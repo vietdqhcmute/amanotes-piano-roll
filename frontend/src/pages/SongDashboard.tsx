@@ -4,22 +4,52 @@ import { useState } from "react";
 import PageHeader from "../components/Navbar/PageHeader";
 import SongCard from "../components/SongCard";
 import CreateSongModal, { type onSubmitCreateSongProps } from "../components/CreateSongModal";
-import { useCreateSong, useSongs } from "../hooks/useSongs";
-import type { Song } from "../types/api";
+import UpdateSongModal from "../components/UpdateSongModal";
+import { useCreateSong, useDeleteSong, useUpdateSong, useSongs } from "../hooks/useSongs";
+import type { Song, UpdateSongData } from "../types/api";
 
 function SongDashboard() {
   const { data: songsData, isLoading, isError } = useSongs();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const { mutate: createSongHandler } = useCreateSong();
+  const { mutate: updateSongHandler } = useUpdateSong();
+  const { mutate: deleteSongHandler } = useDeleteSong();
 
-  const handleModalOk = (values: onSubmitCreateSongProps) => {
-    setIsModalOpen(false);
+  const handleCreateModalOk = (values: onSubmitCreateSongProps) => {
+    setIsCreateModalOpen(false);
     createSongHandler(values);
   };
 
-  const handleModalCancel = () => {
-    setIsModalOpen(false);
+  const handleCreateModalCancel = () => {
+    setIsCreateModalOpen(false);
   };
+
+  const handleUpdateModalOk = (values: UpdateSongData) => {
+    if (selectedSong) {
+      updateSongHandler({ id: selectedSong.id.toString(), data: values });
+      setIsUpdateModalOpen(false);
+      setSelectedSong(null);
+    }
+  };
+
+  const handleUpdateModalCancel = () => {
+    setIsUpdateModalOpen(false);
+    setSelectedSong(null);
+  };
+
+  const handleEditSong = (id: string | number) => {
+    const song = songsData?.find(s => s.id === id);
+    if (song) {
+      setSelectedSong(song);
+      setIsUpdateModalOpen(true);
+    }
+  };
+
+  const handleDeleteSong = (id: string | number) => {
+    deleteSongHandler(id);
+  }
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -29,7 +59,7 @@ function SongDashboard() {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => setIsCreateModalOpen(true)}
             size="large"
           >
             Create Song
@@ -49,14 +79,23 @@ function SongDashboard() {
               description={song.description || ''}
               totalDuration={song.duration}
               tags={song.tags}
+              onDelete={() => handleDeleteSong(song.id)}
+              onEdit={() => handleEditSong(song.id)}
             />
           )}
         />
 
         <CreateSongModal
-          open={isModalOpen}
-          onOk={handleModalOk}
-          onCancel={handleModalCancel}
+          open={isCreateModalOpen}
+          onOk={handleCreateModalOk}
+          onCancel={handleCreateModalCancel}
+        />
+
+        <UpdateSongModal
+          open={isUpdateModalOpen}
+          song={selectedSong}
+          onOk={handleUpdateModalOk}
+          onCancel={handleUpdateModalCancel}
         />
       </Layout.Content>
     </Layout>
