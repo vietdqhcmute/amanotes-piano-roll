@@ -6,13 +6,15 @@ import SongCard from "../components/SongCard";
 import CreateSongModal, { type onSubmitCreateSongProps } from "../components/CreateSongModal";
 import UpdateSongModal from "../components/UpdateSongModal";
 import { useCreateSong, useDeleteSong, useUpdateSong, useSongs } from "../hooks/useSongs";
-import type { Song, UpdateSongData } from "../types/api";
+import { useSongEditStore } from "../stores/songEditStore";
+import type { UpdateSongData } from "../types/api";
 
 function SongDashboard() {
   const { data: songsData, isLoading, isError } = useSongs();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+
+  // Zustand here just to show up my knowledge of State Management libraries, for this simple case useState would be enough
+  const { selectedSong, isUpdateModalOpen, openUpdateModal, closeUpdateModal } = useSongEditStore();
   const { mutate: createSongHandler } = useCreateSong();
   const { mutate: updateSongHandler } = useUpdateSong();
   const { mutate: deleteSongHandler } = useDeleteSong();
@@ -29,21 +31,18 @@ function SongDashboard() {
   const handleUpdateModalOk = (values: UpdateSongData) => {
     if (selectedSong) {
       updateSongHandler({ id: selectedSong.id.toString(), data: values });
-      setIsUpdateModalOpen(false);
-      setSelectedSong(null);
+      closeUpdateModal();
     }
   };
 
   const handleUpdateModalCancel = () => {
-    setIsUpdateModalOpen(false);
-    setSelectedSong(null);
+    closeUpdateModal();
   };
 
   const handleEditSong = (id: string | number) => {
     const song = songsData?.find(s => s.id === id);
     if (song) {
-      setSelectedSong(song);
-      setIsUpdateModalOpen(true);
+      openUpdateModal(song);
     }
   };
 
@@ -92,8 +91,6 @@ function SongDashboard() {
         />
 
         <UpdateSongModal
-          open={isUpdateModalOpen}
-          song={selectedSong}
           onOk={handleUpdateModalOk}
           onCancel={handleUpdateModalCancel}
         />

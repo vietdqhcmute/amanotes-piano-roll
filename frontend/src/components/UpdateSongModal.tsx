@@ -1,41 +1,39 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, InputNumber, Select, Button } from 'antd';
 import { useTags } from '../hooks/useTags';
-import type { Song, UpdateSongData } from '../types/api';
+import { useSongEditStore } from '../stores/songEditStore';
+import type { UpdateSongData } from '../types/api';
 
 const { TextArea } = Input;
 const { Option } = Select;
 
 export interface UpdateSongModalProps {
-  open: boolean;
-  song: Song | null;
   onOk: (values: UpdateSongData) => void;
   onCancel: () => void;
   loading?: boolean;
 }
 
 const UpdateSongModal: React.FC<UpdateSongModalProps> = ({
-  open,
-  song,
   onOk,
   onCancel,
   loading = false,
 }) => {
   const [form] = Form.useForm();
   const { data: tags } = useTags();
+  const { selectedSong, isUpdateModalOpen } = useSongEditStore();
 
   // Reset form when song changes or modal opens
   useEffect(() => {
-    if (open && song) {
+    if (isUpdateModalOpen && selectedSong) {
       form.setFieldsValue({
-        name: song.name,
-        description: song.description || '',
-        bpm: song.bpm || undefined,
-        duration: song.duration,
-        tagIds: song.tags?.map(tag => tag.id) || [],
+        name: selectedSong.name,
+        description: selectedSong.description || '',
+        bpm: selectedSong.bpm || undefined,
+        duration: selectedSong.duration,
+        tagIds: selectedSong.tags?.map(tag => tag.id) || [],
       });
     }
-  }, [open, song, form]);
+  }, [isUpdateModalOpen, selectedSong, form]);
 
   const handleOk = async () => {
     try {
@@ -53,8 +51,8 @@ const UpdateSongModal: React.FC<UpdateSongModalProps> = ({
 
   return (
     <Modal
-      title={`Update Song: ${song?.name || ''}`}
-      open={open}
+      title={`Update Song: ${selectedSong?.name || ''}`}
+      open={isUpdateModalOpen}
       onCancel={handleCancel}
       footer={[
         <Button key="cancel" onClick={handleCancel}>
