@@ -89,7 +89,6 @@ const TrackRoller: React.FC<TrackRollProps> = ({
 
   return (
     <div className="track-roller">
-      <h2>Track Roller</h2>
       <Grid
         className='grid-container'
         columns={totalColumns}
