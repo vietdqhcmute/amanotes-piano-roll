@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { tagsApi } from '../utils/api';
+import type { Tag, CreateTagData, UpdateTagData } from '../types/api';
 
 // Query keys
 export const tagKeys = {
@@ -12,14 +13,14 @@ export const tagKeys = {
 
 // Hooks
 export const useTags = () => {
-  return useQuery({
+  return useQuery<Tag[]>({
     queryKey: tagKeys.lists(),
     queryFn: tagsApi.getAll,
   });
 };
 
 export const useTag = (id: string) => {
-  return useQuery({
+  return useQuery<Tag>({
     queryKey: tagKeys.detail(id),
     queryFn: () => tagsApi.getById(id),
     enabled: !!id,
@@ -29,7 +30,7 @@ export const useTag = (id: string) => {
 export const useCreateTag = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<Tag, Error, CreateTagData>({
     mutationFn: tagsApi.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tagKeys.lists() });
@@ -40,8 +41,8 @@ export const useCreateTag = () => {
 export const useUpdateTag = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => tagsApi.update(id, data),
+  return useMutation<Tag, Error, { id: string; data: UpdateTagData }>({
+    mutationFn: ({ id, data }) => tagsApi.update(id, data),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: tagKeys.lists() });
       queryClient.invalidateQueries({ queryKey: tagKeys.detail(variables.id) });
@@ -52,7 +53,7 @@ export const useUpdateTag = () => {
 export const useDeleteTag = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<void, Error, string>({
     mutationFn: tagsApi.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tagKeys.lists() });

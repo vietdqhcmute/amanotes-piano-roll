@@ -1,0 +1,63 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { notesApi } from '../utils/api';
+import type { Note, CreateNoteData, UpdateNoteData } from '../types/api';
+
+// Query keys
+export const noteKeys = {
+  all: ['notes'] as const,
+  lists: () => [...noteKeys.all, 'list'] as const,
+  list: (songId: string, filters?: Record<string, any>) => [...noteKeys.lists(), songId, { filters }] as const,
+  details: () => [...noteKeys.all, 'detail'] as const,
+  detail: (songId: string, id: string) => [...noteKeys.details(), songId, id] as const,
+};
+
+// Hooks
+export const useNotes = (songId: string) => {
+  return useQuery<Note[]>({
+    queryKey: noteKeys.list(songId),
+    queryFn: () => notesApi.getAll(songId),
+    enabled: !!songId,
+  });
+};
+
+export const useNote = (songId: string, id: string) => {
+  return useQuery<Note>({
+    queryKey: noteKeys.detail(songId, id),
+    queryFn: () => notesApi.getById(songId, id),
+    enabled: !!songId && !!id,
+  });
+};
+
+export const useCreateNote = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<Note, Error, { songId: string; data: CreateNoteData }>({
+    mutationFn: ({ songId, data }) => notesApi.create(songId, data),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: noteKeys.list(variables.songId) });
+    },
+  });
+};
+
+export const useUpdateNote = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<Note, Error, { songId: string; id: string; data: UpdateNoteData }>({
+    mutationFn: ({ songId, id, data }) => notesApi.update(songId, id, data),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: noteKeys.list(variables.songId) });
+      queryClient.invalidateQueries({ queryKey: noteKeys.detail(variables.songId, variables.id) });
+    },
+  });
+};
+
+export const useDeleteNote = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, { songId: string; id: string }>({
+    mutationFn: ({ songId, id }) => notesApi.delete(songId, id),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: noteKeys.list(variables.songId) });
+    },
+  });
+};

@@ -3,17 +3,20 @@ import { List, Typography, Button, Space } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { colors } from '../utils/constants';
+import type { Tag as TagType } from '../types/api';
+import TagList from './SongEditor/TagList';
 
 interface SongCardProps {
   id: string | number;
   name: string;
   description: string;
   totalDuration: number;
+  tags: TagType[] | undefined;
   onEdit?: (id: string | number) => void;
   onDelete?: (id: string | number) => void;
 }
 
-const SongCard: React.FC<SongCardProps> = ({ id, name, description, totalDuration, onEdit, onDelete }) => {
+const SongCard: React.FC<SongCardProps> = ({ id, name, description, totalDuration, tags, onEdit, onDelete }) => {
   const navigate = useNavigate();
 
   const handleTitleClick = () => {
@@ -83,6 +86,7 @@ const SongCard: React.FC<SongCardProps> = ({ id, name, description, totalDuratio
             <Typography.Text type="secondary" style={{ fontSize: '12px', marginTop: '4px' }}>
               Duration: {totalDuration}s
             </Typography.Text>
+            <TagList tags={tags || []} />
           </div>
         }
       />

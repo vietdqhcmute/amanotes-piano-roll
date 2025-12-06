@@ -1,18 +1,24 @@
 import { Layout, Card, Row, Col, Statistic } from "antd";
 import TrackRoller from "../components/SongEditor/TrackRoller";
-import { rockSong } from "../mocks/songs";
-import { convertNotesToCells, calculateTimeResolution, generateTimeLabels } from "../utils/songsUtils";
+import { convertNotesToCells, calculateTimeResolution, generateTimeLabels, mapNotesToTrackPositions } from "../utils/songsUtils";
 import PageHeader from "../components/Navbar/PageHeader";
+import { useParams } from "react-router-dom";
+import { useSong } from "../hooks/useSongs";
+import type { Note, Tag as TagType, Track } from "../types/api";
+import TagList from "../components/SongEditor/TagList";
+import { colors } from "../utils/constants";
+
 
 interface SongDetailProps {
   name: string;
   description: string;
-  totalDuration: number;
+  duration: number;
   trackLabels: string[];
-  notes: NotesProps[];
+  notes: Note[];
+  tracks: Track[];
+  tags: TagType[]
 }
-export interface NotesProps {
-  track: number;
+export interface NotesOutputProps {
   time: number;
   title: string;
   description?: string;
@@ -20,11 +26,14 @@ export interface NotesProps {
 }
 
 function SongDetail() {
-  const mockSong: SongDetailProps = rockSong;
-  const { name, description, totalDuration, trackLabels, notes } = mockSong;
+  const { id } = useParams();
+  const { data: songData, isLoading, isError } = useSong(id || '');
+  const { tracks, notes: notesRes, duration, name, description, tags } = songData as SongDetailProps || {};
+  const notes = mapNotesToTrackPositions(notesRes || [], tracks || []);
+  const trackLabels = tracks?.map(track => track.instrument?.label || 'Unknown Instrument')
 
   const timeResolution = calculateTimeResolution(notes);
-  const timeLabels = generateTimeLabels(totalDuration, timeResolution);
+  const timeLabels = generateTimeLabels(duration, timeResolution);
   const cells = convertNotesToCells(notes, timeResolution);
 
   return (
@@ -38,21 +47,22 @@ function SongDetail() {
                 <Statistic
                   title="Song Name"
                   value={name}
-                  valueStyle={{ color: '#A81DB6', fontSize: '18px', marginBottom: '8px' }}
+                  valueStyle={{ color: colors.colorPrimary, fontSize: '18px', marginBottom: '8px' }}
                 />
                 <Statistic
                   title="Description"
                   value={description}
-                  valueStyle={{ color: '#9307BD', fontSize: '14px' }}
+                  valueStyle={{ color: colors.colorPrimary, fontSize: '14px' }}
                 />
+                <TagList tags={tags || []} />
               </div>
             </Col>
             <Col span={6}>
               <Statistic
                 title="Duration"
-                value={totalDuration}
+                value={duration}
                 suffix="seconds"
-                valueStyle={{ color: '#E92384' }}
+                valueStyle={{ color: colors.colorError }}
               />
             </Col>
           </Row>

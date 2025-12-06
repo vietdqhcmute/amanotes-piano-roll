@@ -3,26 +3,52 @@ import { PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import PageHeader from "../components/Navbar/PageHeader";
 import SongCard from "../components/SongCard";
-import CreateSongModal from "../components/CreateSongModal";
-import { ElectroSong, rockSong } from "../mocks/songs";
+import CreateSongModal, { type onSubmitCreateSongProps } from "../components/CreateSongModal";
+import UpdateSongModal from "../components/UpdateSongModal";
+import { useCreateSong, useDeleteSong, useUpdateSong, useSongs } from "../hooks/useSongs";
+import { useSongEditStore } from "../stores/songEditStore";
+import type { UpdateSongData } from "../types/api";
 
 function SongDashboard() {
-  const mockSongs = [rockSong, ElectroSong];
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: songsData, isLoading, isError } = useSongs();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  const handleCreateSong = () => {
-    setIsModalOpen(true);
+  // Zustand here just to show up my knowledge of State Management libraries, for this simple case useState would be enough
+  const { selectedSong, isUpdateModalOpen, openUpdateModal, closeUpdateModal } = useSongEditStore();
+  const { mutate: createSongHandler } = useCreateSong();
+  const { mutate: updateSongHandler } = useUpdateSong();
+  const { mutate: deleteSongHandler } = useDeleteSong();
+
+  const handleCreateModalOk = (values: onSubmitCreateSongProps) => {
+    setIsCreateModalOpen(false);
+    createSongHandler(values);
   };
 
-  const handleModalOk = (values: any) => {
-    console.log('New song:', values);
-    setIsModalOpen(false);
-    // TODO: Add song creation logic here
+  const handleCreateModalCancel = () => {
+    setIsCreateModalOpen(false);
   };
 
-  const handleModalCancel = () => {
-    setIsModalOpen(false);
+  const handleUpdateModalOk = (values: UpdateSongData) => {
+    if (selectedSong) {
+      updateSongHandler({ id: selectedSong.id.toString(), data: values });
+      closeUpdateModal();
+    }
   };
+
+  const handleUpdateModalCancel = () => {
+    closeUpdateModal();
+  };
+
+  const handleEditSong = (id: string | number) => {
+    const song = songsData?.find(s => s.id === id);
+    if (song) {
+      openUpdateModal(song);
+    }
+  };
+
+  const handleDeleteSong = (id: string | number) => {
+    deleteSongHandler(id);
+  }
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -32,32 +58,41 @@ function SongDashboard() {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={handleCreateSong}
+            onClick={() => setIsCreateModalOpen(true)}
             size="large"
           >
             Create Song
           </Button>
         </div>
-
+        {isLoading && <p>Loading songs...</p>}
+        {isError && <p>Error loading songs.</p>}
         <List
           itemLayout="horizontal"
-          dataSource={mockSongs}
+          dataSource={songsData}
           split={false}
-          renderItem={(song, index) => (
+          renderItem={(song: Song, index) => (
             <SongCard
               key={index}
               id={song.id}
               name={song.name}
-              description={song.description}
-              totalDuration={song.totalDuration}
+              description={song.description || ''}
+              totalDuration={song.duration}
+              tags={song.tags}
+              onDelete={() => handleDeleteSong(song.id)}
+              onEdit={() => handleEditSong(song.id)}
             />
           )}
         />
 
         <CreateSongModal
-          open={isModalOpen}
-          onOk={handleModalOk}
-          onCancel={handleModalCancel}
+          open={isCreateModalOpen}
+          onOk={handleCreateModalOk}
+          onCancel={handleCreateModalCancel}
+        />
+
+        <UpdateSongModal
+          onOk={handleUpdateModalOk}
+          onCancel={handleUpdateModalCancel}
         />
       </Layout.Content>
     </Layout>
