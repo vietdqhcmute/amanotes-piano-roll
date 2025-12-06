@@ -4,21 +4,17 @@ import { useState } from "react";
 import PageHeader from "../components/Navbar/PageHeader";
 import SongCard from "../components/SongCard";
 import CreateSongModal from "../components/CreateSongModal";
-import { useSongs } from "../hooks/useSongs";
+import { useCreateSong, useSongs } from "../hooks/useSongs";
 import type { Song } from "../types/api";
 
 function SongDashboard() {
   const { data: songsData, isLoading, isError } = useSongs();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleCreateSong = () => {
-    setIsModalOpen(true);
-  };
+  const { mutate: createSongHandler, onSuccess: onCreateSongSuccess } = useCreateSong();
 
   const handleModalOk = (values: any) => {
-    console.log('New song:', values);
     setIsModalOpen(false);
-    // TODO: Add song creation logic here
+    createSongHandler(values);
   };
 
   const handleModalCancel = () => {
@@ -33,7 +29,7 @@ function SongDashboard() {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={handleCreateSong}
+            onClick={() => setIsModalOpen(true)}
             size="large"
           >
             Create Song
