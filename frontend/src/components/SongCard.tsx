@@ -1,9 +1,10 @@
 import React from 'react';
-import { List, Typography, Button, Space, Tag } from 'antd';
+import { List, Typography, Button, Space } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { colors } from '../utils/constants';
 import type { Tag as TagType } from '../types/api';
+import TagList from './SongEditor/TagList';
 
 interface SongCardProps {
   id: string | number;
@@ -85,15 +86,7 @@ const SongCard: React.FC<SongCardProps> = ({ id, name, description, totalDuratio
             <Typography.Text type="secondary" style={{ fontSize: '12px', marginTop: '4px' }}>
               Duration: {totalDuration}s
             </Typography.Text>
-            {tags && tags.length > 0 && (
-              <div style={{ marginTop: '8px', }}>
-                {tags.map((tag) => (
-                  <Tag key={tag.id} color={colors.colorInfo} variant='outlined' style={{ marginBottom: '4px', marginRight: '8px' }}>
-                    {tag.label}
-                  </Tag>
-                ))}
-              </div>
-            )}
+            <TagList tags={tags || []} />
           </div>
         }
       />

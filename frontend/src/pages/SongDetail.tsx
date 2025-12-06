@@ -4,7 +4,9 @@ import { convertNotesToCells, calculateTimeResolution, generateTimeLabels, mapNo
 import PageHeader from "../components/Navbar/PageHeader";
 import { useParams } from "react-router-dom";
 import { useSong } from "../hooks/useSongs";
-import type { Note, Track } from "../types/api";
+import type { Note, Tag as TagType, Track } from "../types/api";
+import TagList from "../components/SongEditor/TagList";
+import { colors } from "../utils/constants";
 
 
 interface SongDetailProps {
@@ -14,6 +16,7 @@ interface SongDetailProps {
   trackLabels: string[];
   notes: Note[];
   tracks: Track[];
+  tags: TagType[]
 }
 export interface NotesOutputProps {
   time: number;
@@ -25,8 +28,8 @@ export interface NotesOutputProps {
 function SongDetail() {
   const { id } = useParams();
   const { data: songData, isLoading, isError } = useSong(id || '');
-  const { tracks, notes: songNotes, duration, name, description } = songData as SongDetailProps || {};
-  const notes = mapNotesToTrackPositions(songNotes || [], tracks || []);
+  const { tracks, notes: notesRes, duration, name, description, tags } = songData as SongDetailProps || {};
+  const notes = mapNotesToTrackPositions(notesRes || [], tracks || []);
   const trackLabels = tracks?.map(track => track.instrument?.label || 'Unknown Instrument')
 
   const timeResolution = calculateTimeResolution(notes);
@@ -44,13 +47,14 @@ function SongDetail() {
                 <Statistic
                   title="Song Name"
                   value={name}
-                  valueStyle={{ color: '#A81DB6', fontSize: '18px', marginBottom: '8px' }}
+                  valueStyle={{ color: colors.colorPrimary, fontSize: '18px', marginBottom: '8px' }}
                 />
                 <Statistic
                   title="Description"
                   value={description}
-                  valueStyle={{ color: '#9307BD', fontSize: '14px' }}
+                  valueStyle={{ color: colors.colorPrimary, fontSize: '14px' }}
                 />
+                <TagList tags={tags || []} />
               </div>
             </Col>
             <Col span={6}>
@@ -58,7 +62,7 @@ function SongDetail() {
                 title="Duration"
                 value={duration}
                 suffix="seconds"
-                valueStyle={{ color: '#E92384' }}
+                valueStyle={{ color: colors.colorError }}
               />
             </Col>
           </Row>
