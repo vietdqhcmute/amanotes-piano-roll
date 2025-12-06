@@ -31,6 +31,9 @@ class Api::V1::SongsController < ApplicationController
   # POST /api/v1/songs
   def create
     @song = Song.new(song_params)
+    if song_params[:tag_ids]
+      @song.tag_ids = song_params[:tag_ids]
+    end
 
     if @song.save
       render_json @song, status: :created

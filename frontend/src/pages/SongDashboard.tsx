@@ -3,16 +3,16 @@ import { PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import PageHeader from "../components/Navbar/PageHeader";
 import SongCard from "../components/SongCard";
-import CreateSongModal from "../components/CreateSongModal";
+import CreateSongModal, { type onSubmitCreateSongProps } from "../components/CreateSongModal";
 import { useCreateSong, useSongs } from "../hooks/useSongs";
 import type { Song } from "../types/api";
 
 function SongDashboard() {
   const { data: songsData, isLoading, isError } = useSongs();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { mutate: createSongHandler, onSuccess: onCreateSongSuccess } = useCreateSong();
+  const { mutate: createSongHandler } = useCreateSong();
 
-  const handleModalOk = (values: any) => {
+  const handleModalOk = (values: onSubmitCreateSongProps) => {
     setIsModalOpen(false);
     createSongHandler(values);
   };

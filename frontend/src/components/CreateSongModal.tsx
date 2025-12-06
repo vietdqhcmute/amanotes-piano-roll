@@ -3,7 +3,7 @@ import { Modal, Form, Input, Select } from 'antd';
 import { useTags } from '../hooks/useTags';
 import type { Tag } from '../types/api';
 
-interface onSubmitProps {
+export interface onSubmitCreateSongProps {
   name: string;
   description: string;
   duration: number;
@@ -12,7 +12,7 @@ interface onSubmitProps {
 }
 interface CreateSongModalProps {
   open: boolean;
-  onOk: (values: onSubmitProps) => void;
+  onOk: (values: onSubmitCreateSongProps) => void;
   onCancel: () => void;
 }
 
@@ -98,7 +98,7 @@ const CreateSongModal: React.FC<CreateSongModalProps> = ({ open, onOk, onCancel 
         </Form.Item>
 
         <Form.Item
-          name="tags"
+          name="tag_ids"
           label="Tags"
         >
           <Select
