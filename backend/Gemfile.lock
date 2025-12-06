@@ -123,6 +123,8 @@ GEM
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
     json (2.17.1)
+    jsonapi-serializer (2.2.0)
+      activesupport (>= 4.2)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
@@ -169,6 +171,9 @@ GEM
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.2.4)
+    rack-cors (3.0.0)
+      logger
+      rack (>= 3.0.14)
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -301,8 +306,10 @@ DEPENDENCIES
   debug
   importmap-rails
   jbuilder
+  jsonapi-serializer (~> 2.2)
   pg (~> 1.1)
   puma (>= 5.0)
+  rack-cors
   rails (~> 7.2.3)
   rubocop-rails-omakase
   selenium-webdriver
