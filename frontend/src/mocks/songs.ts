@@ -1,4 +1,5 @@
 export const rockSong = {
+  "id": 1,
   "name": "Rock Beat 120 BPM",
   "description": "Simple rock drum pattern",
   "totalDuration": 30,
@@ -36,6 +37,7 @@ export const rockSong = {
 }
 
 export const ElectroSong = {
+  "id": 2,
   "name": "Electronic Groove",
   "description": "Synth bassline with drums",
   "totalDuration": 180,

@@ -1,9 +1,31 @@
+import { Layout, List } from "antd";
+import PageHeader from "../components/Navbar/PageHeader";
+import SongCard from "../components/SongCard";
+import { ElectroSong, rockSong } from "../mocks/songs";
+
 function SongDashboard() {
+  const mockSongs = [rockSong, ElectroSong]
+
   return (
-    <div>
-      <h1>Song Dashboard</h1>
-      <p>Welcome to the Song Dashboard</p>
-    </div>
+    <Layout style={{ minHeight: '100vh' }}>
+      <PageHeader title="Songs Dashboard" />
+      <Layout.Content style={{ padding: '24px' }}>
+        <List
+          itemLayout="horizontal"
+          dataSource={mockSongs}
+          split={false}
+          renderItem={(song, index) => (
+            <SongCard
+              key={index}
+              id={song.id}
+              name={song.name}
+              description={song.description}
+              totalDuration={song.totalDuration}
+            />
+          )}
+        />
+      </Layout.Content>
+    </Layout>
   );
 }
 
