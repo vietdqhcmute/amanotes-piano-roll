@@ -1,14 +1,33 @@
-# Dependencies
+# Frontend Dependencies
 node_modules/
 .pnpm-store/
 
-# Build outputs
+# Frontend Build outputs
 dist/
 build/
-tmp/
-temp/
 coverage/
 .vite/
+
+# Backend Rails ignores
+/backend/log/*
+/backend/tmp/*
+!/backend/log/.keep
+!/backend/tmp/.keep
+/backend/storage/*
+!/backend/storage/.keep
+/backend/public/assets
+/backend/public/packs
+/backend/public/packs-test
+/backend/node_modules
+/backend/yarn-error.log
+yarn-debug.log*
+.byebug_history
+/backend/config/master.key
+/backend/config/credentials/*.key
+
+# Database
+/backend/db/*.sqlite3
+/backend/db/*.sqlite3-*
 
 # Environment files
 .env
@@ -29,8 +48,36 @@ Thumbs.db
 !.vscode/extensions.json
 !.vscode/settings.json
 
+# Ruby/Rails specific
+*.rbc
+capybara-*.html
+.rspec
+/backend/vendor/bundle
+/backend/.bundle
+/backend/coverage/
+/backend/.nyc_output
+/backend/InstalledFiles
+/backend/_yardoc
+/backend/doc/
+/backend/rdoc
+/backend/.document
+/backend/lib/bundler/man
+/backend/pkg
+/backend/spec/reports
+/backend/spec/examples.txt
+/backend/test/tmp
+/backend/test/version_tmp
+
 # TypeScript
 *.tsbuildinfo
 
 # Testing
 .playwright/
+
+# Docker
+.dockerignore
+
+# Temporary files
+tmp/
+temp/
+
