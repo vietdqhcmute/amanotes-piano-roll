@@ -20,7 +20,7 @@ class Api::V1::SongsController < ApplicationController
         tracks: {
           only: [:id],
           include: {
-            instrument: { only: [:id, :label] },
+            instrument: { only: [:id, :label, :color] },
           }
         },
         notes: { only: [:id, :time, :description, :track_id] }

@@ -1,7 +1,8 @@
 import type { CellData } from "../components/SongEditor/TrackRoller";
-import type { NotesProps } from "../pages/SongDetail";
+import type { NotesOutputProps } from "../pages/SongDetail";
+import type { Note, Track } from "../types/api";
 
-export const calculateTimeResolution = (notes: NotesProps[]): number => {
+export const calculateTimeResolution = (notes: NotesOutputProps[]): number => {
   if (notes.length === 0) return 1;
 
   let smallestDecimal = 1;
@@ -23,7 +24,7 @@ export const calculateTimeResolution = (notes: NotesProps[]): number => {
 };
 
 export const convertNotesToCells = (
-  notes: NotesProps[],
+  notes: NotesOutputProps[],
   timeResolution: number = 1
 ): CellData[] => {
   return notes.map(note => ({
@@ -44,5 +45,39 @@ export const generateTimeLabels = (totalDuration: number, timeResolution: number
   return Array.from({ length: numSteps }, (_, i) => {
     const time = i * timeResolution;
     return time % 1 === 0 ? `${time}s` : `${time.toFixed(1)}s`;
+  });
+};
+
+export const mapNotesToTrackPositions = (
+  notes: Note[],
+  tracks: Track[]
+): NotesOutputProps[] => {
+  const trackMap = new Map(
+    tracks.map((track, index) => [
+      track.id,
+      {
+        position: index + 1,
+        label: track.instrument?.label || 'Unknown Instrument',
+        color: track.instrument?.color || '#000000'
+      }
+    ])
+  );
+
+  const defaultTrackInfo = {
+    track: 0,
+    title: 'Unknown Instrument',
+    color: '#000000',
+  };
+
+  return notes.map(note => {
+    const trackInfo = trackMap.get(note.trackId);
+
+    return {
+      track: trackInfo?.position || defaultTrackInfo.track,
+      title: trackInfo?.label || defaultTrackInfo.title,
+      color: trackInfo?.color || defaultTrackInfo.color,
+      time: note.time,
+      description: note.description || '',
+    };
   });
 };

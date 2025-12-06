@@ -53,6 +53,7 @@ export interface Instrument {
   label: string;
   createdAt: string;
   updatedAt: string;
+  color: string;
 }
 
 // Note related types

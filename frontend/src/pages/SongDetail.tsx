@@ -1,20 +1,21 @@
 import { Layout, Card, Row, Col, Statistic } from "antd";
 import TrackRoller from "../components/SongEditor/TrackRoller";
-import { rockSong } from "../mocks/songs";
-import { convertNotesToCells, calculateTimeResolution, generateTimeLabels } from "../utils/songsUtils";
+import { convertNotesToCells, calculateTimeResolution, generateTimeLabels, mapNotesToTrackPositions } from "../utils/songsUtils";
 import PageHeader from "../components/Navbar/PageHeader";
 import { useParams } from "react-router-dom";
 import { useSong } from "../hooks/useSongs";
+import type { Note, Track } from "../types/api";
+
 
 interface SongDetailProps {
   name: string;
   description: string;
-  totalDuration: number;
+  duration: number;
   trackLabels: string[];
-  notes: NotesProps[];
+  notes: Note[];
+  tracks: Track[];
 }
-export interface NotesProps {
-  track: number;
+export interface NotesOutputProps {
   time: number;
   title: string;
   description?: string;
@@ -24,12 +25,12 @@ export interface NotesProps {
 function SongDetail() {
   const { id } = useParams();
   const { data: songData, isLoading, isError } = useSong(id || '');
-  console.log(songData)
-  const mockSong: SongDetailProps = rockSong;
-  const { name, description, totalDuration, trackLabels, notes } = mockSong;
+  const { tracks, notes: songNotes, duration, name, description } = songData as SongDetailProps || {};
+  const notes = mapNotesToTrackPositions(songNotes || [], tracks || []);
+  const trackLabels = tracks?.map(track => track.instrument?.label || 'Unknown Instrument')
 
   const timeResolution = calculateTimeResolution(notes);
-  const timeLabels = generateTimeLabels(totalDuration, timeResolution);
+  const timeLabels = generateTimeLabels(duration, timeResolution);
   const cells = convertNotesToCells(notes, timeResolution);
 
   return (
@@ -55,7 +56,7 @@ function SongDetail() {
             <Col span={6}>
               <Statistic
                 title="Duration"
-                value={totalDuration}
+                value={duration}
                 suffix="seconds"
                 valueStyle={{ color: '#E92384' }}
               />
