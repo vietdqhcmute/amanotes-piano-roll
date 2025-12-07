@@ -52,13 +52,15 @@ export const useUpdateNote = () => {
   });
 };
 
-export const useDeleteNote = () => {
+export const useDeleteNote = (songId: string) => {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, { songId: string; id: string }>({
-    mutationFn: ({ songId, id }) => notesApi.delete(songId, id),
+  return useMutation<void, Error, { noteId: string }>({
+    mutationFn: ({ noteId }) => notesApi.delete(songId, noteId),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: noteKeys.list(variables.songId) });
+      queryClient.invalidateQueries({ queryKey: songKeys.detail(songId) });
+      queryClient.invalidateQueries({ queryKey: noteKeys.all });
+      queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
     },
   });
 };

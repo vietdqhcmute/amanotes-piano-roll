@@ -9,6 +9,7 @@ import TagList from "../components/SongEditor/TagList";
 import { colors } from "../utils/constants";
 import InstrumentSelect from "../components/SongEditor/InstrumentSelect";
 import { useMemo } from "react";
+import { useCreateNote, useDeleteNote } from "../hooks/useNotes";
 
 
 interface SongDetailProps {
@@ -21,25 +22,55 @@ interface SongDetailProps {
   tags: TagType[]
 }
 export interface NotesOutputProps {
+  noteId: number;
   time: number;
   title: string;
   description?: string;
   color: string;
+  track: number;
 }
 
 function SongDetail() {
   const { id: currentSongId } = useParams();
   const { data: songData, isLoading, isError } = useSong(currentSongId || '');
+  const { mutate: deleteNoteHandler } = useDeleteNote(currentSongId || '');
+  const { mutate: createNoteHandler } = useCreateNote(currentSongId || '');
+
   const { tracks, notes: notesRes, duration, name, description, tags } = songData as SongDetailProps || {};
   const trackLabels = tracks?.map(track => track.instrument?.label || 'Unknown Instrument')
+
+  console.log(tracks)
 
   const notes = useMemo(() => mapNotesToTrackPositions(notesRes || [], tracks || []), [notesRes, tracks]);
   const timeResolution = useMemo(() => calculateTimeResolution(notes), [notes]);
   const timeLabels = useMemo(() => generateTimeLabels(duration, timeResolution), [duration, timeResolution]);
   const cells = useMemo(() => convertNotesToCells(notes, timeResolution), [notes, timeResolution]);
 
-  const cellClickHandler = (rowNumber: number, columnNumber: number) => {
-    console.log(`Cell clicked at row: ${rowNumber}s, col: ${columnNumber}`);
+  // const instrumentNameMapByTrackId = useMemo(() => {
+  //   const map = new Map<string, number>();
+  //   tracks?.forEach((track, index) => {
+  //     map.set(track.instrument?.label || 'Unknown Instrument', track.id); // +1 for 1-based indexing
+  //   });
+  //   return map;
+  // }, [tracks]);
+
+  // const handleAddNoteToEmptyCell = (rowNumber: number, columnNumber: number, headerLabel?: string, sidebarLabel?: string) => {
+  //   const selectedTrackId = instrumentNameMapByTrackId.get(headerLabel || '');
+  //   const time = (rowNumber - 2) * timeResolution; // -2 to convert back to 0-based time index
+  //   console.log('Adding note at time:', time, 'on track:', selectedTrackId);
+  // }
+
+  // const handleDeleteNoteFromCell = (note: NotesOutputProps) => {
+  //   const { note: noteInfo } = note;
+  //   deleteNoteHandler({ noteId: noteInfo.noteId });
+  // }
+
+  const cellClickHandler = (rowNumber: number, columnNumber: number, headerLabel?: string, sidebarLabel?: string, note?: NotesOutputProps) => {
+    // if (note) {
+    //   handleDeleteNoteFromCell(note);
+    // } else {
+    //   handleAddNoteToEmptyCell(rowNumber, columnNumber, headerLabel, sidebarLabel);
+    // }
   }
 
   return (
@@ -74,12 +105,14 @@ function SongDetail() {
           </Row>
         </Card>
         <InstrumentSelect />
-        <TrackRoller
-          headers={trackLabels}
-          sidebarItems={timeLabels}
-          cells={cells}
-          onCellClick={cellClickHandler}
-        />
+        {trackLabels && trackLabels.length > 0 &&
+          <TrackRoller
+            headers={trackLabels}
+            sidebarItems={timeLabels}
+            cells={cells}
+            onCellClick={cellClickHandler}
+          />
+        }
       </Layout.Content>
     </Layout>
   );

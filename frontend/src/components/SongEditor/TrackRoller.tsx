@@ -1,13 +1,16 @@
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, type JSX } from 'react';
 import styled from 'styled-components';
 import Note from './Note';
 
 const Grid = styled.div<{ columns: number; rows: number }>`
   display: grid;
-  grid-template-columns: repeat(${props => props.columns}, 100px);
-  grid-template-rows: repeat(${props => props.rows}, 30px);
+  grid-template-columns: repeat(${props => Math.min(props.columns, 50)}, 100px);
+  grid-template-rows: repeat(${props => Math.min(props.rows, 100)}, 30px);
   gap: 2px;
+  overflow: auto;
+  max-height: 80vh;
+  max-width: 100vw;
 `
 const Header = styled.div<{ headerCount: number }>`
   grid-column: 2 / ${props => props.headerCount + 2};
@@ -84,8 +87,8 @@ const TrackRoller: React.FC<TrackRollProps> = ({
 }) => {
 
   // NOTE: +1 for the empty first corner cell
-  const totalColumns = headers.length + 1;
-  const totalRows = sidebarItems.length + 1;
+  const totalColumns = useMemo(() => headers.length + 1, [headers.length]);
+  const totalRows = useMemo(() => sidebarItems.length + 1, [sidebarItems.length]);
 
   const onCellClick = useCallback((rowIndex: number, columnIndex: number) => {
     const headerLabel = headers[columnIndex - 1];
@@ -96,35 +99,48 @@ const TrackRoller: React.FC<TrackRollProps> = ({
     }
   }, [headers, sidebarItems, onCellClickProp])
 
-  // Generate all grid cells with click handlers
-  const generateAllCells = useCallback(() => {
-    const allCells = [];
+  // Create a map for faster cell lookup
+  const cellsMap = useMemo(() => {
+    const map = new Map<string, CellData>();
+    cells.forEach(cell => {
+      map.set(`${cell.rowNumber}-${cell.columnNumber}`, cell);
+    });
+    return map;
+  }, [cells]);
+
+  // Generate all grid cells with click handlers - memoized for performance
+  const allCells = useMemo(() => {
+    console.log('Generating all cells', { totalRows, totalColumns });
+    const cellElements: JSX.Element[] = [];
+
+    // Limit grid size to prevent UI blocking
+    const maxRows = Math.min(totalRows, 100); // Limit to 100 rows max
+    const maxCols = Math.min(totalColumns, 50); // Limit to 50 columns max
 
     // Generate cells for the main grid area (excluding header and sidebar)
-    for (let row = 2; row <= totalRows; row++) {
-      for (let col = 2; col <= totalColumns; col++) {
-        const existingCell = cells.find(c => c.rowNumber === row && c.columnNumber === col);
+    for (let row = 2; row <= maxRows; row++) {
+      for (let col = 2; col <= maxCols; col++) {
+        const cellKey = `${row}-${col}`;
+        const existingCell = cellsMap.get(cellKey);
 
         if (existingCell) {
           // Create existing cell that has note data
-          allCells.push(
+          cellElements.push(
             <Cell
-              key={`${row}-${col}`}
+              key={cellKey}
               row={row}
               column={col}
               isActive={existingCell.isActive}
-              onClick={() => {
-                onCellClick(row, col);
-              }}
+              onClick={() => onCellClick(row, col)}
             >
               <Note cell={existingCell} />
             </Cell>
           );
         } else {
           // Create empty clickable cell
-          allCells.push(
+          cellElements.push(
             <Cell
-              key={`${row}-${col}`}
+              key={cellKey}
               row={row}
               column={col}
               onClick={() => onCellClick(row, col)}
@@ -134,8 +150,13 @@ const TrackRoller: React.FC<TrackRollProps> = ({
       }
     }
 
-    return allCells;
-  }, [cells, onCellClick, totalColumns, totalRows]);
+    return cellElements;
+  }, [cellsMap, onCellClick, totalColumns, totalRows]);
+
+  // Early return if no data to prevent unnecessary rendering
+  if (!headers.length || !sidebarItems.length) {
+    return <div>No data to display</div>;
+  }
 
   return (
     <div className="track-roller">
@@ -161,7 +182,7 @@ const TrackRoller: React.FC<TrackRollProps> = ({
           ))}
         </Sidebar>
 
-        {generateAllCells()}
+        {allCells}
       </Grid>
     </div>
   )
