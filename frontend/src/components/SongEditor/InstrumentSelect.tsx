@@ -1,8 +1,10 @@
 import { PlusCircleFilled } from '@ant-design/icons'
 import { Button, Col, Row, Select, Typography } from 'antd'
-import React from 'react'
+import React, { useState } from 'react'
 import { useInstruments } from '../../hooks/useInstruments';
-import type { Instrument, Track } from '../../types/api';
+import { useCreateNote } from '../../hooks/useNotes';
+import AddNoteModal from '../AddNoteModal';
+import type { Instrument, Track, CreateNoteData } from '../../types/api';
 import { useParams } from 'react-router-dom';
 import { useCreateTrack, useDeleteTrack } from '../../hooks/useTracks';
 import { useSong } from '../../hooks/useSongs';
@@ -11,9 +13,11 @@ const InstrumentSelect: React.FC = () => {
   const { id: currentSongId } = useParams();
   const { data: songData } = useSong(currentSongId || '');
   const { tracks } = songData || {};
+  const [isAddNoteModalOpen, setIsAddNoteModalOpen] = useState(false);
   const selectedInstrumentIds = tracks?.map((track: Track) => track.instrument?.id) || [];
   const { mutate: createTrack } = useCreateTrack(currentSongId || '');
   const { mutate: deleteTrack } = useDeleteTrack(currentSongId || '');
+  const { mutate: createNote } = useCreateNote(currentSongId || '');
   const { data: instrumentsData } = useInstruments();
   const instrumentOptions = instrumentsData && instrumentsData.map((inst: Instrument) => ({
     value: inst.id,
@@ -28,6 +32,18 @@ const InstrumentSelect: React.FC = () => {
   const onRemoveTrackInstrument = (value: string) => {
     deleteTrack({ instrumentId: value });
   }
+
+  const handleAddNote = (values: CreateNoteData) => {
+    if (currentSongId) {
+      createNote({ data: values });
+      setIsAddNoteModalOpen(false);
+    }
+  };
+
+  const handleAddNoteCancel = () => {
+    setIsAddNoteModalOpen(false);
+  };
+
   return (
     <div>
       <Typography.Text strong style={{ fontSize: '16px' }} >Instruments Used</Typography.Text>
@@ -45,9 +61,24 @@ const InstrumentSelect: React.FC = () => {
           />
         </Col>
         <Col span={2}>
-          <Button icon={<PlusCircleFilled />} type="primary" onClick={() => { }}>Add Note</Button>
+          <Button
+            icon={<PlusCircleFilled />}
+            type="primary"
+            onClick={() => setIsAddNoteModalOpen(true)}
+            disabled={!tracks || tracks.length === 0}
+          >
+            Add Note
+          </Button>
         </Col>
       </Row>
+
+      <AddNoteModal
+        open={isAddNoteModalOpen}
+        tracks={tracks || []}
+        songDuration={songData?.duration || 0}
+        onOk={handleAddNote}
+        onCancel={handleAddNoteCancel}
+      />
     </div>
   )
 }

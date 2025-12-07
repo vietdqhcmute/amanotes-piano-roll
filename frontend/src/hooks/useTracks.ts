@@ -56,7 +56,7 @@ export const useDeleteTrack = (songId: string) => {
   return useMutation<void, Error, string>({
     mutationFn: (id) => tracksApi.delete(songId, id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: trackKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: songKeys.detail(songId) });
     },
   });
 };
