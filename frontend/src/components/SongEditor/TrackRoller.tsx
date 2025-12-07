@@ -1,7 +1,7 @@
 
-import { Tooltip } from 'antd';
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
+import Note from './Note';
 
 const Grid = styled.div<{ columns: number; rows: number }>`
   display: grid;
@@ -33,11 +33,6 @@ const SidebarElement = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-`
-
-const Main = styled.div`
-  grid-column: 2 / 5;
-  grid-row: 2 / 5;
 `
 
 const Cell = styled.div<{ row: number; column: number; isActive?: boolean }>`
@@ -75,17 +70,72 @@ interface TrackRollProps {
   headers?: string[];
   sidebarItems?: string[];
   cells?: CellData[];
+  onCellClick?: (rowIndex: number, columnIndex: number, headerLabel?: string, sidebarLabel?: string) => void;
 }
 
+const DEFAULT_HEADERS = ['Header 1', 'Header 2', 'Header 3', 'Header 4', 'Header 5', 'Header 6', 'Header 7', 'Header 8'];
+const DEFAULT_SIDEBAR_ITEMS = ['Row 1', 'Row 2', 'Row 3', 'Row 4', 'Row 5', 'Row 6'];
+
 const TrackRoller: React.FC<TrackRollProps> = ({
-  headers = ['Header 1', 'Header 2', 'Header 3', 'Header 4', 'Header 5', 'Header 6', 'Header 7', 'Header 8'],
-  sidebarItems = ['Row 1', 'Row 2', 'Row 3', 'Row 4', 'Row 5', 'Row 6'],
-  cells = []
+  headers = DEFAULT_HEADERS,
+  sidebarItems = DEFAULT_SIDEBAR_ITEMS,
+  cells = [],
+  onCellClick: onCellClickProp
 }) => {
 
   // NOTE: +1 for the empty first corner cell
   const totalColumns = headers.length + 1;
   const totalRows = sidebarItems.length + 1;
+
+  const onCellClick = useCallback((rowIndex: number, columnIndex: number) => {
+    const headerLabel = headers[columnIndex - 1];
+    const sidebarLabel = sidebarItems[rowIndex - 1];
+
+    if (onCellClickProp) {
+      onCellClickProp(rowIndex, columnIndex, headerLabel, sidebarLabel);
+    }
+  }, [headers, sidebarItems, onCellClickProp])
+
+  // Generate all grid cells with click handlers
+  const generateAllCells = useCallback(() => {
+    const allCells = [];
+
+    // Generate cells for the main grid area (excluding header and sidebar)
+    for (let row = 2; row <= totalRows; row++) {
+      for (let col = 2; col <= totalColumns; col++) {
+        const existingCell = cells.find(c => c.rowNumber === row && c.columnNumber === col);
+
+        if (existingCell) {
+          // Create existing cell that has note data
+          allCells.push(
+            <Cell
+              key={`${row}-${col}`}
+              row={row}
+              column={col}
+              isActive={existingCell.isActive}
+              onClick={() => {
+                onCellClick(row, col);
+              }}
+            >
+              <Note cell={existingCell} />
+            </Cell>
+          );
+        } else {
+          // Create empty clickable cell
+          allCells.push(
+            <Cell
+              key={`${row}-${col}`}
+              row={row}
+              column={col}
+              onClick={() => onCellClick(row, col)}
+            />
+          );
+        }
+      }
+    }
+
+    return allCells;
+  }, [cells, onCellClick, totalColumns, totalRows]);
 
   return (
     <div className="track-roller">
@@ -111,25 +161,7 @@ const TrackRoller: React.FC<TrackRollProps> = ({
           ))}
         </Sidebar>
 
-        {/* Render dynamic cells */}
-        {cells.map((cell, index) => (
-          <Cell
-            key={index}
-            row={cell.rowNumber}
-            column={cell.columnNumber}
-            isActive={cell.isActive}
-            onClick={cell.onClick}
-          >
-            <Tooltip title={cell.content.description || cell.content.title}>
-              <div style={{
-                backgroundColor: cell.content.color,
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%'
-              }}></div>
-            </Tooltip>
-          </Cell>
-        ))}
+        {generateAllCells()}
       </Grid>
     </div>
   )

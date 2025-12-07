@@ -8,6 +8,7 @@ import type { Note, Tag as TagType, Track } from "../types/api";
 import TagList from "../components/SongEditor/TagList";
 import { colors } from "../utils/constants";
 import InstrumentSelect from "../components/SongEditor/InstrumentSelect";
+import { useMemo } from "react";
 
 
 interface SongDetailProps {
@@ -30,12 +31,16 @@ function SongDetail() {
   const { id: currentSongId } = useParams();
   const { data: songData, isLoading, isError } = useSong(currentSongId || '');
   const { tracks, notes: notesRes, duration, name, description, tags } = songData as SongDetailProps || {};
-  const notes = mapNotesToTrackPositions(notesRes || [], tracks || []);
   const trackLabels = tracks?.map(track => track.instrument?.label || 'Unknown Instrument')
 
-  const timeResolution = calculateTimeResolution(notes);
-  const timeLabels = generateTimeLabels(duration, timeResolution);
-  const cells = convertNotesToCells(notes, timeResolution);
+  const notes = useMemo(() => mapNotesToTrackPositions(notesRes || [], tracks || []), [notesRes, tracks]);
+  const timeResolution = useMemo(() => calculateTimeResolution(notes), [notes]);
+  const timeLabels = useMemo(() => generateTimeLabels(duration, timeResolution), [duration, timeResolution]);
+  const cells = useMemo(() => convertNotesToCells(notes, timeResolution), [notes, timeResolution]);
+
+  const cellClickHandler = (rowNumber: number, columnNumber: number) => {
+    console.log(`Cell clicked at row: ${rowNumber}s, col: ${columnNumber}`);
+  }
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -73,6 +78,7 @@ function SongDetail() {
           headers={trackLabels}
           sidebarItems={timeLabels}
           cells={cells}
+          onCellClick={cellClickHandler}
         />
       </Layout.Content>
     </Layout>
