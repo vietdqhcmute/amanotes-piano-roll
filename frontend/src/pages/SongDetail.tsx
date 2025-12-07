@@ -7,6 +7,7 @@ import { useSong } from "../hooks/useSongs";
 import type { Note, Tag as TagType, Track } from "../types/api";
 import TagList from "../components/SongEditor/TagList";
 import { colors } from "../utils/constants";
+import InstrumentSelect from "../components/SongEditor/InstrumentSelect";
 
 
 interface SongDetailProps {
@@ -26,8 +27,8 @@ export interface NotesOutputProps {
 }
 
 function SongDetail() {
-  const { id } = useParams();
-  const { data: songData, isLoading, isError } = useSong(id || '');
+  const { id: currentSongId } = useParams();
+  const { data: songData, isLoading, isError } = useSong(currentSongId || '');
   const { tracks, notes: notesRes, duration, name, description, tags } = songData as SongDetailProps || {};
   const notes = mapNotesToTrackPositions(notesRes || [], tracks || []);
   const trackLabels = tracks?.map(track => track.instrument?.label || 'Unknown Instrument')
@@ -40,7 +41,7 @@ function SongDetail() {
     <Layout style={{ minHeight: '100vh' }}>
       <PageHeader title="Song Detail" backLink="/song-dashboard" />
       <Layout.Content style={{ padding: '24px' }}>
-        <Card style={{ marginBottom: '24px' }}>
+        <Card style={{ marginBottom: '16px' }}>
           <Row gutter={24}>
             <Col span={18}>
               <div>
@@ -67,7 +68,7 @@ function SongDetail() {
             </Col>
           </Row>
         </Card>
-
+        <InstrumentSelect />
         <TrackRoller
           headers={trackLabels}
           sidebarItems={timeLabels}

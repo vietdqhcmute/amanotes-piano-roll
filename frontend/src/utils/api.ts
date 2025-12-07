@@ -1,4 +1,4 @@
-import { Song, CreateSongData, UpdateSongData, Tag, CreateTagData, UpdateTagData, Note, CreateNoteData, UpdateNoteData } from '../types/api';
+import { Song, CreateSongData, UpdateSongData, Tag, CreateTagData, UpdateTagData, Note, CreateNoteData, UpdateNoteData, type Instrument, type Track, type CreateTrackData, type UpdateTrackData } from '../types/api';
 
 // Base API configuration
 export const API_BASE_URL = '/api/v1';
@@ -64,7 +64,9 @@ export const songsApi = {
   delete: (id: string): Promise<void> => apiRequest<void>(`/songs/${id}`, {
     method: 'DELETE',
   }),
-};export const tagsApi = {
+};
+
+export const tagsApi = {
   getAll: (): Promise<Tag[]> => apiRequest<Tag[]>('/tags'),
   getById: (id: string): Promise<Tag> => apiRequest<Tag>(`/tags/${id}`),
   create: (data: CreateTagData): Promise<Tag> => apiRequest<Tag>('/tags', {
@@ -92,6 +94,26 @@ export const notesApi = {
     body: JSON.stringify({ note: data }),
   }),
   delete: (songId: string, id: string): Promise<void> => apiRequest<void>(`/songs/${songId}/notes/${id}`, {
+    method: 'DELETE',
+  }),
+};
+
+export const instrumentsApi = {
+  getAll: (): Promise<Instrument[]> => apiRequest<Instrument[]>('/instruments'),
+};
+
+export const tracksApi = {
+  getAll: (songId: string): Promise<Track[]> => apiRequest<Track[]>(`/songs/${songId}/tracks`),
+  getById: (songId: string, id: string): Promise<Track> => apiRequest<Track>(`/songs/${songId}/tracks/${id}`),
+  create: (songId: string, data: CreateTrackData): Promise<Track> => apiRequest<Track>(`/songs/${songId}/tracks`, {
+    method: 'POST',
+    body: JSON.stringify({ track: data }),
+  }),
+  update: (songId: string, id: string, data: UpdateTrackData): Promise<Track> => apiRequest<Track>(`/songs/${songId}/tracks/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ track: data }),
+  }),
+  delete: (songId: string, id: string): Promise<void> => apiRequest<void>(`/songs/${songId}/tracks/${id}`, {
     method: 'DELETE',
   }),
 };
