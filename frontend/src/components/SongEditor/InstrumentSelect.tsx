@@ -6,19 +6,21 @@ import { useCreateNote } from '../../hooks/useNotes';
 import AddNoteModal from '../AddNoteModal';
 import type { Instrument, Track, CreateNoteData } from '../../types/api';
 import { useParams } from 'react-router-dom';
-import { useCreateTrack, useDeleteTrack } from '../../hooks/useTracks';
+import { useCreateTrack, useDeleteTrack, useTracks } from '../../hooks/useTracks';
 import { useSong } from '../../hooks/useSongs';
 
 const InstrumentSelect: React.FC = () => {
   const { id: currentSongId } = useParams();
   const { data: songData } = useSong(currentSongId || '');
-  const { tracks } = songData || {};
-  const [isAddNoteModalOpen, setIsAddNoteModalOpen] = useState(false);
-  const selectedInstrumentIds = tracks?.map((track: Track) => track.instrument?.id) || [];
+
   const { mutate: createTrack } = useCreateTrack(currentSongId || '');
   const { mutate: deleteTrack } = useDeleteTrack(currentSongId || '');
   const { mutate: createNote } = useCreateNote(currentSongId || '');
   const { data: instrumentsData } = useInstruments();
+  const { data: tracksData } = useTracks(currentSongId || '');
+
+  const [isAddNoteModalOpen, setIsAddNoteModalOpen] = useState(false);
+  const selectedInstrumentIds = tracksData?.map((track: Track) => track.instrument?.id) || [];
   const instrumentOptions = instrumentsData && instrumentsData.map((inst: Instrument) => ({
     value: inst.id,
     label: inst.label,
@@ -65,7 +67,7 @@ const InstrumentSelect: React.FC = () => {
             icon={<PlusCircleFilled />}
             type="primary"
             onClick={() => setIsAddNoteModalOpen(true)}
-            disabled={!tracks || tracks.length === 0}
+            disabled={!tracksData || tracksData.length === 0}
           >
             Add Note
           </Button>
@@ -74,7 +76,7 @@ const InstrumentSelect: React.FC = () => {
 
       <AddNoteModal
         open={isAddNoteModalOpen}
-        tracks={tracks || []}
+        tracks={tracksData || []}
         songDuration={songData?.duration || 0}
         onOk={handleAddNote}
         onCancel={handleAddNoteCancel}

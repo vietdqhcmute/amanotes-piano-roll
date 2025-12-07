@@ -13,17 +13,9 @@ class Api::V1::SongsController < ApplicationController
 
   # GET /api/v1/songs/:id
   def show
-    song = Song.includes(:tags, tracks: :instrument, notes: []).find(params[:id])
-    render_json song.as_json(
+    render_json @song.as_json(
       include: {
-        tags: { only: [:id, :label] },
-        tracks: {
-          only: [:id],
-          include: {
-            instrument: { only: [:id, :label, :color] },
-          }
-        },
-        notes: { only: [:id, :time, :description, :track_id] }
+        tags: { only: [:id, :label] }
       }
     )
   end

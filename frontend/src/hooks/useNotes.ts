@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notesApi } from '../utils/api';
 import type { Note, CreateNoteData, UpdateNoteData } from '../types/api';
-import { songKeys } from './useSongs';
 
 // Query keys
 export const noteKeys = {
@@ -35,7 +34,7 @@ export const useCreateNote = (songId: string) => {
   return useMutation<Note, Error, { data: CreateNoteData }>({
     mutationFn: ({ data }) => notesApi.create(songId, data),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: songKeys.detail(songId) });
+      queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
     },
   });
 };
@@ -58,7 +57,6 @@ export const useDeleteNote = (songId: string) => {
   return useMutation<void, Error, { noteId: string }>({
     mutationFn: ({ noteId }) => notesApi.delete(songId, noteId),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: songKeys.detail(songId) });
       queryClient.invalidateQueries({ queryKey: noteKeys.all });
       queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
     },

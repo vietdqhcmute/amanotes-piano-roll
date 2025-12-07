@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { tracksApi } from '../utils/api';
 import type { Track, CreateTrackData, UpdateTrackData } from '../types/api';
-import { songKeys } from './useSongs';
 
 // Query keys
 export const trackKeys = {
@@ -34,7 +33,7 @@ export const useCreateTrack = (songId: string) => {
   return useMutation<Track, Error, CreateTrackData>({
     mutationFn: (data) => tracksApi.create(songId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: songKeys.detail(songId) });
+      queryClient.invalidateQueries({ queryKey: trackKeys.lists() });
     },
   });
 };
@@ -56,7 +55,7 @@ export const useDeleteTrack = (songId: string) => {
   return useMutation<void, Error, string>({
     mutationFn: (id) => tracksApi.delete(songId, id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: songKeys.detail(songId) });
+      queryClient.invalidateQueries({ queryKey: trackKeys.lists() });
     },
   });
 };

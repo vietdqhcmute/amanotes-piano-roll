@@ -9,8 +9,8 @@ import TagList from "../components/SongEditor/TagList";
 import { colors } from "../utils/constants";
 import InstrumentSelect from "../components/SongEditor/InstrumentSelect";
 import { useCallback, useMemo } from "react";
-import { useCreateNote, useDeleteNote } from "../hooks/useNotes";
-
+import { useCreateNote, useDeleteNote, useNotes } from "../hooks/useNotes";
+import { useTracks } from "../hooks/useTracks";
 
 interface SongDetailProps {
   name: string;
@@ -33,26 +33,28 @@ export interface NotesOutputProps {
 function SongDetail() {
   const { id: currentSongId } = useParams();
   const { data: songData, isLoading, isError } = useSong(currentSongId || '');
+  const { data: notesData } = useNotes(currentSongId || '');
+  const { data: tracksData } = useTracks(currentSongId || '');
+
   const { mutate: deleteNoteHandler } = useDeleteNote(currentSongId || '');
   const { mutate: createNoteHandler } = useCreateNote(currentSongId || '');
 
-  const { tracks, notes: notesRes, duration, name, description, tags } = songData as SongDetailProps || {};
-  const trackLabels = tracks?.map(track => track.instrument?.label || 'Unknown Instrument')
+  const { duration, name, description, tags } = songData as SongDetailProps || {};
+  const trackLabels = tracksData?.map(track => track.instrument?.label || 'Unknown Instrument')
 
-  const notes = useMemo(() => mapNotesToTrackPositions(notesRes || [], tracks || []), [notesRes, tracks]);
+  const notes = useMemo(() => mapNotesToTrackPositions(notesData || [], tracksData || []), [notesData, tracksData]);
   const timeResolution = useMemo(() => calculateTimeResolution(notes), [notes]);
   const timeLabels = useMemo(() => generateTimeLabels(duration, timeResolution), [duration, timeResolution]);
   const cells = useMemo(() => convertNotesToCells(notes, timeResolution), [notes, timeResolution]);
 
   const instrumentNameMapByTrackId = useMemo(() => {
     const map = new Map<string, number>();
-    tracks?.forEach((track, index) => {
+    tracksData?.forEach((track, index) => {
       map.set(track.instrument?.label || 'Unknown Instrument', track.id); // +1 for 1-based indexing
     });
     return map;
-  }, [tracks]);
+  }, [tracksData]);
 
-  console.log({ instrumentNameMapByTrackId })
 
   const handleAddNoteToEmptyCell = useCallback((rowNumber: number, columnNumber: number, headerLabel?: string, sidebarLabel?: string) => {
     const selectedTrackId = instrumentNameMapByTrackId.get(headerLabel || '');
