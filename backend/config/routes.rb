@@ -14,8 +14,10 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :songs, only: [:index, :show, :create, :update, :destroy] do
         resources :notes, only: [:index, :show, :create, :update, :destroy]
+        resources :tracks, only: [:index, :show, :create, :update, :destroy]
       end
       resources :tags, only: [:index, :show, :create, :update, :destroy]
+      resources :instruments, only: [:index]
     end
   end
 

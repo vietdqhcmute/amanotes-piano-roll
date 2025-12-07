@@ -37,6 +37,7 @@ export const convertNotesToCells = (
       color: note.color
     },
     isActive: true,
+    note
   }));
 };
 
@@ -73,6 +74,7 @@ export const mapNotesToTrackPositions = (
     const trackInfo = trackMap.get(note.trackId);
 
     return {
+      noteId: note.id,
       track: trackInfo?.position || defaultTrackInfo.track,
       title: trackInfo?.label || defaultTrackInfo.title,
       color: trackInfo?.color || defaultTrackInfo.color,

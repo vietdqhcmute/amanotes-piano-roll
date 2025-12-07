@@ -28,13 +28,16 @@ export const useNote = (songId: string, id: string) => {
   });
 };
 
-export const useCreateNote = () => {
+export const useCreateNote = (songId: string) => {
   const queryClient = useQueryClient();
 
-  return useMutation<Note, Error, { songId: string; data: CreateNoteData }>({
-    mutationFn: ({ songId, data }) => notesApi.create(songId, data),
+  return useMutation<Note, Error, { data: CreateNoteData }>({
+    mutationFn: ({ data }) => notesApi.create(songId, data),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: noteKeys.list(variables.songId) });
+      // Invalidate and refetch notes for the specific song
+      queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
+      // Force immediate refetch
+      queryClient.refetchQueries({ queryKey: noteKeys.list(songId) });
     },
   });
 };
@@ -51,13 +54,15 @@ export const useUpdateNote = () => {
   });
 };
 
-export const useDeleteNote = () => {
+export const useDeleteNote = (songId: string) => {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, { songId: string; id: string }>({
-    mutationFn: ({ songId, id }) => notesApi.delete(songId, id),
+  return useMutation<void, Error, { noteId: string }>({
+    mutationFn: ({ noteId }) => notesApi.delete(songId, noteId),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: noteKeys.list(variables.songId) });
+      queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
+      queryClient.invalidateQueries({ queryKey: noteKeys.detail(songId, variables.noteId) });
+      queryClient.refetchQueries({ queryKey: noteKeys.list(songId) });
     },
   });
 };

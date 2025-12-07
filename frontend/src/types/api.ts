@@ -84,3 +84,10 @@ export interface ApiError {
 export interface ValidationError {
   errors: Record<string, string[]>;
 }
+
+export interface CreateTrackData {
+  instrumentId: number;
+  songId: number;
+}
+
+export interface UpdateTrackData extends Partial<CreateTrackData> {}

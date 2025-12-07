@@ -1,13 +1,16 @@
 
-import { Tooltip } from 'antd';
-import React from 'react';
+import React, { useCallback, useMemo, type JSX } from 'react';
 import styled from 'styled-components';
+import Note from './Note';
 
 const Grid = styled.div<{ columns: number; rows: number }>`
   display: grid;
-  grid-template-columns: repeat(${props => props.columns}, 100px);
-  grid-template-rows: repeat(${props => props.rows}, 30px);
+  grid-template-columns: repeat(${props => Math.min(props.columns, 50)}, 100px);
+  grid-template-rows: repeat(${props => Math.min(props.rows, 100)}, 30px);
   gap: 2px;
+  overflow: auto;
+  max-height: 80vh;
+  max-width: 100vw;
 `
 const Header = styled.div<{ headerCount: number }>`
   grid-column: 2 / ${props => props.headerCount + 2};
@@ -33,11 +36,6 @@ const SidebarElement = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-`
-
-const Main = styled.div`
-  grid-column: 2 / 5;
-  grid-row: 2 / 5;
 `
 
 const Cell = styled.div<{ row: number; column: number; isActive?: boolean }>`
@@ -75,17 +73,89 @@ interface TrackRollProps {
   headers?: string[];
   sidebarItems?: string[];
   cells?: CellData[];
+  onCellClick?: (rowIndex: number, columnIndex: number, headerLabel?: string, sidebarLabel?: string, cell?: CellData) => void;
 }
 
+const DEFAULT_HEADERS = ['Header 1', 'Header 2', 'Header 3', 'Header 4', 'Header 5', 'Header 6', 'Header 7', 'Header 8'];
+const DEFAULT_SIDEBAR_ITEMS = ['Row 1', 'Row 2', 'Row 3', 'Row 4', 'Row 5', 'Row 6'];
+
 const TrackRoller: React.FC<TrackRollProps> = ({
-  headers = ['Header 1', 'Header 2', 'Header 3', 'Header 4', 'Header 5', 'Header 6', 'Header 7', 'Header 8'],
-  sidebarItems = ['Row 1', 'Row 2', 'Row 3', 'Row 4', 'Row 5', 'Row 6'],
-  cells = []
+  headers = DEFAULT_HEADERS,
+  sidebarItems = DEFAULT_SIDEBAR_ITEMS,
+  cells = [],
+  onCellClick: onCellClickProp
 }) => {
 
   // NOTE: +1 for the empty first corner cell
-  const totalColumns = headers.length + 1;
-  const totalRows = sidebarItems.length + 1;
+  const totalColumns = useMemo(() => headers.length + 1, [headers.length]);
+  const totalRows = useMemo(() => sidebarItems.length + 1, [sidebarItems.length]);
+
+  const onCellClick = useCallback((rowIndex: number, columnIndex: number, cell?: CellData) => {
+    const headerLabel = headers[columnIndex - 2];
+    const sidebarLabel = sidebarItems[rowIndex - 1];
+
+    if (onCellClickProp) {
+      onCellClickProp(rowIndex, columnIndex, headerLabel, sidebarLabel, cell);
+    }
+  }, [headers, sidebarItems, onCellClickProp])
+
+  // Create a map for faster cell lookup
+  const cellsMap = useMemo(() => {
+    const map = new Map<string, CellData>();
+    cells.forEach(cell => {
+      map.set(`${cell.rowNumber}-${cell.columnNumber}`, cell);
+    });
+    return map;
+  }, [cells]);
+
+  // Generate all grid cells with click handlers - memoized for performance
+  const allCells = useMemo(() => {
+    const cellElements: JSX.Element[] = [];
+
+    // Limit grid size to prevent UI blocking
+    const maxRows = Math.min(totalRows, 100); // Limit to 100 rows max
+    const maxCols = Math.min(totalColumns, 50); // Limit to 50 columns max
+
+    // Generate cells for the main grid area (excluding header and sidebar)
+    for (let row = 2; row <= maxRows; row++) {
+      for (let col = 2; col <= maxCols; col++) {
+        const cellKey = `${row}-${col}`;
+        const existingCell = cellsMap.get(cellKey);
+
+        if (existingCell) {
+          // Create existing cell that has note data
+          cellElements.push(
+            <Cell
+              key={cellKey}
+              row={row}
+              column={col}
+              isActive={existingCell.isActive}
+              onClick={() => onCellClick(row, col, existingCell)}
+            >
+              <Note cell={existingCell} />
+            </Cell>
+          );
+        } else {
+          // Create empty clickable cell
+          cellElements.push(
+            <Cell
+              key={cellKey}
+              row={row}
+              column={col}
+              onClick={() => onCellClick(row, col)}
+            />
+          );
+        }
+      }
+    }
+
+    return cellElements;
+  }, [cellsMap, onCellClick, totalColumns, totalRows]);
+
+  // Early return if no data to prevent unnecessary rendering
+  if (!headers.length || !sidebarItems.length) {
+    return <div>No data to display</div>;
+  }
 
   return (
     <div className="track-roller">
@@ -111,25 +181,7 @@ const TrackRoller: React.FC<TrackRollProps> = ({
           ))}
         </Sidebar>
 
-        {/* Render dynamic cells */}
-        {cells.map((cell, index) => (
-          <Cell
-            key={index}
-            row={cell.rowNumber}
-            column={cell.columnNumber}
-            isActive={cell.isActive}
-            onClick={cell.onClick}
-          >
-            <Tooltip title={cell.content.description || cell.content.title}>
-              <div style={{
-                backgroundColor: cell.content.color,
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%'
-              }}></div>
-            </Tooltip>
-          </Cell>
-        ))}
+        {allCells}
       </Grid>
     </div>
   )

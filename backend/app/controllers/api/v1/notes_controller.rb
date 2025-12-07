@@ -1,6 +1,6 @@
 class Api::V1::NotesController < ApplicationController
   before_action :set_song
-  before_action :set_note, only: [:show, :update, :destroy]
+  before_action :set_note, only: [:show, :destroy]
 
   # GET /api/v1/songs/:song_id/notes
   def index
@@ -32,19 +32,11 @@ class Api::V1::NotesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /api/v1/songs/:song_id/notes/:id
-  def update
-    if @note.update(note_params)
-      render_json @note
-    else
-      render_json({ errors: @note.errors }, status: :unprocessable_entity)
-    end
-  end
 
   # DELETE /api/v1/songs/:song_id/notes/:id
   def destroy
     @note.destroy
-    head :no_content
+    render_json({ message: 'Note deleted successfully' }, status: :ok)
   end
 
   private
