@@ -73,7 +73,7 @@ interface TrackRollProps {
   headers?: string[];
   sidebarItems?: string[];
   cells?: CellData[];
-  onCellClick?: (rowIndex: number, columnIndex: number, headerLabel?: string, sidebarLabel?: string) => void;
+  onCellClick?: (rowIndex: number, columnIndex: number, headerLabel?: string, sidebarLabel?: string, cell?: CellData) => void;
 }
 
 const DEFAULT_HEADERS = ['Header 1', 'Header 2', 'Header 3', 'Header 4', 'Header 5', 'Header 6', 'Header 7', 'Header 8'];
@@ -90,12 +90,12 @@ const TrackRoller: React.FC<TrackRollProps> = ({
   const totalColumns = useMemo(() => headers.length + 1, [headers.length]);
   const totalRows = useMemo(() => sidebarItems.length + 1, [sidebarItems.length]);
 
-  const onCellClick = useCallback((rowIndex: number, columnIndex: number) => {
+  const onCellClick = useCallback((rowIndex: number, columnIndex: number, cell?: CellData) => {
     const headerLabel = headers[columnIndex - 2];
     const sidebarLabel = sidebarItems[rowIndex - 1];
 
     if (onCellClickProp) {
-      onCellClickProp(rowIndex, columnIndex, headerLabel, sidebarLabel);
+      onCellClickProp(rowIndex, columnIndex, headerLabel, sidebarLabel, cell);
     }
   }, [headers, sidebarItems, onCellClickProp])
 
@@ -130,7 +130,7 @@ const TrackRoller: React.FC<TrackRollProps> = ({
               row={row}
               column={col}
               isActive={existingCell.isActive}
-              onClick={() => onCellClick(row, col)}
+              onClick={() => onCellClick(row, col, existingCell)}
             >
               <Note cell={existingCell} />
             </Cell>

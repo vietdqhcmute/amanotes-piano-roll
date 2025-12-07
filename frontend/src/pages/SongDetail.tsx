@@ -46,7 +46,6 @@ function SongDetail() {
   const timeResolution = useMemo(() => calculateTimeResolution(notes), [notes]);
   const timeLabels = useMemo(() => generateTimeLabels(duration, timeResolution), [duration, timeResolution]);
   const cells = useMemo(() => convertNotesToCells(notes, timeResolution), [notes, timeResolution]);
-
   const instrumentNameMapByTrackId = useMemo(() => {
     const map = new Map<string, number>();
     tracksData?.forEach((track, index) => {

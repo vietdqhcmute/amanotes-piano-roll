@@ -34,7 +34,10 @@ export const useCreateNote = (songId: string) => {
   return useMutation<Note, Error, { data: CreateNoteData }>({
     mutationFn: ({ data }) => notesApi.create(songId, data),
     onSuccess: (data, variables) => {
+      // Invalidate and refetch notes for the specific song
       queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
+      // Force immediate refetch
+      queryClient.refetchQueries({ queryKey: noteKeys.list(songId) });
     },
   });
 };
@@ -57,8 +60,9 @@ export const useDeleteNote = (songId: string) => {
   return useMutation<void, Error, { noteId: string }>({
     mutationFn: ({ noteId }) => notesApi.delete(songId, noteId),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: noteKeys.all });
       queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
+      queryClient.invalidateQueries({ queryKey: noteKeys.detail(songId, variables.noteId) });
+      queryClient.refetchQueries({ queryKey: noteKeys.list(songId) });
     },
   });
 };

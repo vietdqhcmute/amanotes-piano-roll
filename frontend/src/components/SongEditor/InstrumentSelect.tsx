@@ -1,6 +1,6 @@
 import { PlusCircleFilled } from '@ant-design/icons'
 import { Button, Col, Row, Select, Typography } from 'antd'
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useInstruments } from '../../hooks/useInstruments';
 import { useCreateNote } from '../../hooks/useNotes';
 import AddNoteModal from '../AddNoteModal';
@@ -27,24 +27,24 @@ const InstrumentSelect: React.FC = () => {
     color: inst.color,
   }));
 
-  const onAddTrackInstrument = (value: string) => {
+  const onAddTrackInstrument = useCallback((value: string) => {
     createTrack({ instrumentId: value });
-  }
+  }, [createTrack]);
 
-  const onRemoveTrackInstrument = (value: string) => {
+  const onRemoveTrackInstrument = useCallback((value: string) => {
     deleteTrack({ instrumentId: value });
-  }
+  }, [deleteTrack]);
 
-  const handleAddNote = (values: CreateNoteData) => {
+  const handleAddNote = useCallback((values: CreateNoteData) => {
     if (currentSongId) {
       createNote({ data: values });
       setIsAddNoteModalOpen(false);
     }
-  };
+  }, [currentSongId, createNote]);
 
-  const handleAddNoteCancel = () => {
+  const handleAddNoteCancel = useCallback(() => {
     setIsAddNoteModalOpen(false);
-  };
+  }, []);
 
   return (
     <div>

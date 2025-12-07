@@ -36,7 +36,7 @@ class Api::V1::NotesController < ApplicationController
   # DELETE /api/v1/songs/:song_id/notes/:id
   def destroy
     @note.destroy
-    head :no_content
+    render_json({ message: 'Note deleted successfully' }, status: :ok)
   end
 
   private
