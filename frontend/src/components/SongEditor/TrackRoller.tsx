@@ -91,7 +91,7 @@ const TrackRoller: React.FC<TrackRollProps> = ({
   const totalRows = useMemo(() => sidebarItems.length + 1, [sidebarItems.length]);
 
   const onCellClick = useCallback((rowIndex: number, columnIndex: number) => {
-    const headerLabel = headers[columnIndex - 1];
+    const headerLabel = headers[columnIndex - 2];
     const sidebarLabel = sidebarItems[rowIndex - 1];
 
     if (onCellClickProp) {
@@ -110,7 +110,6 @@ const TrackRoller: React.FC<TrackRollProps> = ({
 
   // Generate all grid cells with click handlers - memoized for performance
   const allCells = useMemo(() => {
-    console.log('Generating all cells', { totalRows, totalColumns });
     const cellElements: JSX.Element[] = [];
 
     // Limit grid size to prevent UI blocking

@@ -8,7 +8,7 @@ import type { Note, Tag as TagType, Track } from "../types/api";
 import TagList from "../components/SongEditor/TagList";
 import { colors } from "../utils/constants";
 import InstrumentSelect from "../components/SongEditor/InstrumentSelect";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useCreateNote, useDeleteNote } from "../hooks/useNotes";
 
 
@@ -39,39 +39,46 @@ function SongDetail() {
   const { tracks, notes: notesRes, duration, name, description, tags } = songData as SongDetailProps || {};
   const trackLabels = tracks?.map(track => track.instrument?.label || 'Unknown Instrument')
 
-  console.log(tracks)
-
   const notes = useMemo(() => mapNotesToTrackPositions(notesRes || [], tracks || []), [notesRes, tracks]);
   const timeResolution = useMemo(() => calculateTimeResolution(notes), [notes]);
   const timeLabels = useMemo(() => generateTimeLabels(duration, timeResolution), [duration, timeResolution]);
   const cells = useMemo(() => convertNotesToCells(notes, timeResolution), [notes, timeResolution]);
 
-  // const instrumentNameMapByTrackId = useMemo(() => {
-  //   const map = new Map<string, number>();
-  //   tracks?.forEach((track, index) => {
-  //     map.set(track.instrument?.label || 'Unknown Instrument', track.id); // +1 for 1-based indexing
-  //   });
-  //   return map;
-  // }, [tracks]);
+  const instrumentNameMapByTrackId = useMemo(() => {
+    const map = new Map<string, number>();
+    tracks?.forEach((track, index) => {
+      map.set(track.instrument?.label || 'Unknown Instrument', track.id); // +1 for 1-based indexing
+    });
+    return map;
+  }, [tracks]);
 
-  // const handleAddNoteToEmptyCell = (rowNumber: number, columnNumber: number, headerLabel?: string, sidebarLabel?: string) => {
-  //   const selectedTrackId = instrumentNameMapByTrackId.get(headerLabel || '');
-  //   const time = (rowNumber - 2) * timeResolution; // -2 to convert back to 0-based time index
-  //   console.log('Adding note at time:', time, 'on track:', selectedTrackId);
-  // }
+  console.log({ instrumentNameMapByTrackId })
 
-  // const handleDeleteNoteFromCell = (note: NotesOutputProps) => {
-  //   const { note: noteInfo } = note;
-  //   deleteNoteHandler({ noteId: noteInfo.noteId });
-  // }
+  const handleAddNoteToEmptyCell = useCallback((rowNumber: number, columnNumber: number, headerLabel?: string, sidebarLabel?: string) => {
+    const selectedTrackId = instrumentNameMapByTrackId.get(headerLabel || '');
+    const time = (rowNumber - 2) * timeResolution; // -2 to convert back to 0-based time index
+    if (selectedTrackId !== undefined) {
+      createNoteHandler({
+        data: {
+          time,
+          trackId: selectedTrackId,
+        }
+      });
+    }
+  }, [createNoteHandler, instrumentNameMapByTrackId, timeResolution]);
 
-  const cellClickHandler = (rowNumber: number, columnNumber: number, headerLabel?: string, sidebarLabel?: string, note?: NotesOutputProps) => {
-    // if (note) {
-    //   handleDeleteNoteFromCell(note);
-    // } else {
-    //   handleAddNoteToEmptyCell(rowNumber, columnNumber, headerLabel, sidebarLabel);
-    // }
-  }
+  const handleDeleteNoteFromCell = useCallback((note: NotesOutputProps) => {
+    const { note: noteInfo } = note;
+    deleteNoteHandler({ noteId: noteInfo.noteId });
+  }, [deleteNoteHandler])
+
+  const cellClickHandler = useCallback((rowNumber: number, columnNumber: number, headerLabel?: string, sidebarLabel?: string, note?: NotesOutputProps) => {
+    if (note) {
+      handleDeleteNoteFromCell(note);
+    } else {
+      handleAddNoteToEmptyCell(rowNumber, columnNumber, headerLabel, sidebarLabel);
+    }
+  }, [handleAddNoteToEmptyCell, handleDeleteNoteFromCell])
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
