@@ -13,6 +13,7 @@ const NotificationProvider: React.FC<NotificationProviderProps> = ({ children })
   const notifySuccess = (description: string) => {
     api.success({
       message: 'Successful!',
+      title: 'Successful!',
       description,
       placement: PLACEMENT,
       duration: DURATION,
@@ -22,6 +23,7 @@ const NotificationProvider: React.FC<NotificationProviderProps> = ({ children })
   const notifyError = (description: string) => {
     api.error({
       message: 'Error!',
+      title: 'Error!',
       description,
       placement: PLACEMENT,
       duration: DURATION,
