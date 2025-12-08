@@ -35,12 +35,9 @@ const InstrumentSelect: React.FC = () => {
 
   const onRemoveTrackInstrument = useCallback((value: number | undefined) => {
     if (value !== undefined) {
-      const trackToDelete = tracksData?.find(track => track.instrument?.id === value);
-      if (trackToDelete) {
-        deleteTrack(trackToDelete.id.toString());
-      }
+      deleteTrack(value.toString());
     }
-  }, [deleteTrack, tracksData]);
+  }, [deleteTrack]);
 
   const handleAddNote = useCallback((values: CreateNoteData) => {
     if (currentSongId) {

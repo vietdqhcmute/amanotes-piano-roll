@@ -55,7 +55,7 @@ services:
     depends_on:
       - web
     environment:
-      - VITE_API_URL=/api/
+      - VITE_API_URL=
       - VITE_DOCKER_URL=http://web:3000
       - COREPACK_ENABLE_DOWNLOAD_PROMPT=0
     # Run as root initially to fix permissions, then switch to node user for Vite

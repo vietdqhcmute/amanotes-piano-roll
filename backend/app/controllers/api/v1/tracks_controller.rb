@@ -34,19 +34,19 @@ class Api::V1::TracksController < ApplicationController
 
   def destroy
     @track.destroy
-    head :no_content
+    render_json({ message: 'Note deleted successfully' }, status: :ok)
   end
 
   private
 
   def set_song
-    @song = Song.find(params[:id] || params[:song_id])
+    @song = Song.find(params[:song_id])
   rescue ActiveRecord::RecordNotFound
     render_json({ error: 'Song not found' }, status: :not_found)
   end
 
   def set_track
-    @track = @song.tracks.find(params[:id])
+    @track = @song.tracks.find_by(instrument_id: params[:id])
   rescue ActiveRecord::RecordNotFound
     render_json({ error: 'Track not found' }, status: :not_found)
   end
