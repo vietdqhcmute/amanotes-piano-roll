@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { tracksApi } from '../utils/api';
 import type { Track, CreateTrackData, UpdateTrackData } from '../types/api';
+import useCustomNotification from '../context/Notification/useCustomNotification';
 
 export const trackKeys = {
   all: ['tracks'] as const,
@@ -12,20 +13,21 @@ export const trackKeys = {
 
 export const useTracks = (songId: string) => {
   return useQuery<Track[]>({
-    queryKey: trackKeys.lists(),
+    queryKey: trackKeys.list({ songId }),
     queryFn: () => tracksApi.getAll(songId),
     enabled: !!songId,
   });
 }
-export const useTrack = (songId: string, id: string) => {
+export const useTrack = (songId: string) => {
   return useQuery<Track>({
-    queryKey: trackKeys.detail(id),
-    queryFn: () => tracksApi.getById(songId, id),
-    enabled: !!songId && !!id,
+    queryKey: trackKeys.detail(songId),
+    queryFn: () => tracksApi.getById(songId),
+    enabled: !!songId,
   });
 };
 
 export const useCreateTrack = (songId: string) => {
+  const { notifyError } = useCustomNotification()
   const queryClient = useQueryClient();
 
   return useMutation<Track, Error, CreateTrackData>({
@@ -33,6 +35,11 @@ export const useCreateTrack = (songId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: trackKeys.lists() });
     },
+    onError: (error) => {
+      if (error.message.includes('422')) {
+        notifyError('Cannot create more than 8 tracks per song');
+      }
+    }
   });
 };
 
