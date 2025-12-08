@@ -1,6 +1,6 @@
-import { PlusCircleFilled } from '@ant-design/icons'
-import { Button, Col, Row, Select, Typography } from 'antd'
-import React, { useState, useCallback } from 'react'
+import { PlusCircleFilled } from '@ant-design/icons';
+import { Button, Col, Row, Select, Typography } from 'antd';
+import { useState, useCallback, forwardRef } from 'react';
 import { useInstruments } from '../../hooks/useInstruments';
 import { useCreateNote } from '../../hooks/useNotes';
 import AddNoteModal from '../AddNoteModal';
@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import { useCreateTrack, useDeleteTrack, useTracks } from '../../hooks/useTracks';
 import { useSong } from '../../hooks/useSongs';
 
-const InstrumentSelect: React.FC = () => {
+const InstrumentSelect = forwardRef<HTMLButtonElement>((_, ref) => {
   const { id: currentSongId } = useParams();
   const { data: songData } = useSong(currentSongId || '');
 
@@ -68,6 +68,7 @@ const InstrumentSelect: React.FC = () => {
         </Col>
         <Col span={2}>
           <Button
+            ref={ref}
             icon={<PlusCircleFilled />}
             type="primary"
             onClick={() => setIsAddNoteModalOpen(true)}
@@ -87,6 +88,8 @@ const InstrumentSelect: React.FC = () => {
       />
     </div>
   )
-}
+});
+
+InstrumentSelect.displayName = 'InstrumentSelect';
 
 export default InstrumentSelect

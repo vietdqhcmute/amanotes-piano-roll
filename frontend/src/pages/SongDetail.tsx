@@ -7,7 +7,8 @@ import { useSong } from "../hooks/useSongs";
 import TagList from "../components/SongEditor/TagList";
 import { colors } from "../utils/constants";
 import InstrumentSelect from "../components/SongEditor/InstrumentSelect";
-import { useCallback, useMemo } from "react";
+import PianoRollTour from "../components/PianoRollTour";
+import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { useCreateNote, useDeleteNote, useNotes } from "../hooks/useNotes";
 import { useTracks } from "../hooks/useTracks";
 
@@ -29,6 +30,33 @@ function SongDetail() {
 
   const { mutate: deleteNoteHandler } = useDeleteNote(currentSongId || '');
   const { mutate: createNoteHandler } = useCreateNote(currentSongId || '');
+
+  // Tour state and refs
+  const [tourOpen, setTourOpen] = useState(false);
+  const instrumentSelectRef = useRef<HTMLDivElement>(null);
+  const addNoteButtonRef = useRef<HTMLButtonElement>(null);
+  const trackRollerRef = useRef<HTMLDivElement>(null);
+
+  // Check if user has seen the tour before
+  useEffect(() => {
+    const hasSeenTour = localStorage.getItem('pianoRollTourCompleted');
+    if (!hasSeenTour) {
+      // Delay tour start to ensure components are rendered
+      const timer = setTimeout(() => {
+        setTourOpen(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleTourClose = useCallback(() => {
+    setTourOpen(false);
+    localStorage.setItem('pianoRollTourCompleted', 'true');
+  }, []);
+
+  const handleTourOpen = useCallback(() => {
+    setTourOpen(true);
+  }, []);
 
   const duration = songData?.duration || 0;
   const name = songData?.name || '';
@@ -106,18 +134,38 @@ function SongDetail() {
                 suffix="seconds"
                 valueStyle={{ color: colors.colorError }}
               />
+              <Statistic
+                title="BPM"
+                value={songData?.bpm || 0}
+                suffix="bpm"
+                valueStyle={{ color: colors.colorError }}
+              />
             </Col>
           </Row>
         </Card>
-        <InstrumentSelect />
+        <div ref={instrumentSelectRef}>
+          <InstrumentSelect ref={addNoteButtonRef} />
+        </div>
         {trackLabels && trackLabels.length > 0 &&
-          <TrackRoller
-            headers={trackLabels}
-            sidebarItems={timeLabels}
-            cells={cells}
-            onCellClick={cellClickHandler}
-          />
+          <div ref={trackRollerRef}>
+            <TrackRoller
+              headers={trackLabels}
+              sidebarItems={timeLabels}
+              cells={cells}
+              onCellClick={cellClickHandler}
+            />
+          </div>
         }
+
+        <PianoRollTour
+          tourOpen={tourOpen}
+          onTourClose={handleTourClose}
+          onTourOpen={handleTourOpen}
+          onTourFinish={handleTourClose}
+          instrumentSelectRef={instrumentSelectRef}
+          addNoteButtonRef={addNoteButtonRef}
+          trackRollerRef={trackRollerRef}
+        />
       </Layout.Content>
     </Layout>
   );

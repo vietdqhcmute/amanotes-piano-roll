@@ -70,7 +70,14 @@ const SongCard: React.FC<SongCardProps> = ({ id, name, description, totalDuratio
             style={{
               color: colors.colorPrimary,
               cursor: 'pointer',
-              fontSize: '18px'
+              fontSize: '18px',
+              transition: 'color 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = colors.colorHighlight;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = colors.colorPrimary;
             }}
             onClick={handleTitleClick}
           >

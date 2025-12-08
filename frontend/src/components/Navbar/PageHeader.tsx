@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Layout, Typography } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
+import { colors } from '../../utils/constants';
 
 const { Header } = Layout;
 
@@ -21,11 +22,11 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, backLink }) => {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         {backLink && (
-          <Link to={backLink} style={{ textDecoration: 'none' }}>
-            <ArrowLeftOutlined style={{ fontSize: '24px', color: '#1890ff' }} />
+          <Link to={backLink} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+            <ArrowLeftOutlined style={{ fontSize: '20px', color: colors.colorPrimary }} />
           </Link>
         )}
-        <Typography.Title level={2} style={{ margin: 0 }}>
+        <Typography.Title level={2} style={{ margin: 0, color: colors.colorPrimary }}>
           {title}
         </Typography.Title>
       </div>

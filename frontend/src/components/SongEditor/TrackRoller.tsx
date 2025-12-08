@@ -2,6 +2,7 @@
 import React, { useCallback, useMemo, type JSX } from 'react';
 import styled from 'styled-components';
 import Note from './Note';
+import { colors } from '../../utils/constants';
 
 const Grid = styled.div<{ columns: number; rows: number }>`
   display: grid;
@@ -46,9 +47,10 @@ const Cell = styled.div<{ row: number; column: number; isActive?: boolean }>`
   justify-content: center;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  border-radius: 4px;
 
   &:hover {
-    background-color: ${props => props.isActive ? '#A32EFF' : '#e9e9e9'};
+    background-color: ${props => props.isActive ? colors.colorHighlight : '#e9e9e9'};
   }
 `
 
