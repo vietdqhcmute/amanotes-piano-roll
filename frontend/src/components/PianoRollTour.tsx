@@ -30,19 +30,19 @@ const PianoRollTour: React.FC<PianoRollTourProps> = ({
     {
       title: 'Add Instruments/Tracks',
       description: 'First, select instruments to create tracks. Each instrument becomes a track where you can add notes. You can select multiple instruments.',
-      target: () => instrumentSelectRef.current,
-      placement: 'bottom',
+      target: () => instrumentSelectRef.current || document.body,
+      placement: 'bottom' as const,
     },
     {
       title: 'Quick Detail Notes',
       description: 'Use this button to add notes to your tracks with specific time and description through a modal form. Select the track and specify the time.',
-      target: () => addNoteButtonRef.current,
-      placement: 'bottom',
+      target: () => addNoteButtonRef.current || document.body,
+      placement: 'bottom' as const,
     },
     {
       title: 'Interactive Piano Roll Grid',
       description: 'This is your main workspace! Each column represents an instrument track, and each row represents time. Click empty cells to add notes, click existing notes to delete them.',
-      target: () => trackRollerRef.current,
+      target: () => trackRollerRef.current || document.body,
     },
     {
       title: 'Tips for Using the Grid',
@@ -54,7 +54,7 @@ const PianoRollTour: React.FC<PianoRollTourProps> = ({
           <div>• Tracks flow from left to right</div>
         </div>
       ),
-      target: () => trackRollerRef.current,
+      target: () => trackRollerRef.current || document.body,
     },
   ];
 
