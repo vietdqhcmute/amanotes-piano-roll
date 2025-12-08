@@ -11,7 +11,7 @@ export const useInstruments = () => {
   return useQuery<Instrument[]>({
     queryKey: instrumentKeys.lists(),
     queryFn: instrumentsApi.getAll,
-    cacheTime: 60 * 60 * 1000, // 1 hour
+    gcTime: 60 * 60 * 1000, // 1 hour
   });
 };
 

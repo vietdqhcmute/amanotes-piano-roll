@@ -1,4 +1,4 @@
-import { Song, CreateSongData, UpdateSongData, Tag, CreateTagData, UpdateTagData, Note, CreateNoteData, UpdateNoteData, type Instrument, type Track, type CreateTrackData, type UpdateTrackData } from '../types/api';
+import type { Song, CreateSongData, UpdateSongData, Tag, CreateTagData, UpdateTagData, Note, CreateNoteData, UpdateNoteData, Instrument, Track, CreateTrackData, UpdateTrackData } from '../types/api';
 
 // Base API configuration
 export const API_BASE_URL = '/api/v1';
@@ -30,7 +30,7 @@ export const apiRequest = async <T>(endpoint: string, options?: RequestInit): Pr
   };
 
   // Convert request body from camelCase to snake_case if it's a JSON payload
-  if (config.body && config.headers?.['Content-Type']?.includes('application/json')) {
+  if (config.body && (config.headers as any)?.['Content-Type']?.includes('application/json')) {
     try {
       const parsedBody = JSON.parse(config.body as string);
       const snakeCaseBody = camelToSnakeCase(parsedBody);

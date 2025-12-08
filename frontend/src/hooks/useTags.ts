@@ -43,7 +43,7 @@ export const useUpdateTag = () => {
 
   return useMutation<Tag, Error, { id: string; data: UpdateTagData }>({
     mutationFn: ({ id, data }) => tagsApi.update(id, data),
-    onSuccess: (data, variables) => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: tagKeys.lists() });
       queryClient.invalidateQueries({ queryKey: tagKeys.detail(variables.id) });
     },

@@ -43,7 +43,7 @@ export const useUpdateSong = () => {
 
   return useMutation<Song, Error, { id: string; data: UpdateSongData }>({
     mutationFn: ({ id, data }) => songsApi.update(id, data),
-    onSuccess: (data, variables) => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: songKeys.lists() });
       queryClient.invalidateQueries({ queryKey: songKeys.detail(variables.id) });
     },

@@ -7,14 +7,14 @@ import CreateSongModal, { type onSubmitCreateSongProps } from "../components/Cre
 import UpdateSongModal from "../components/UpdateSongModal";
 import { useCreateSong, useDeleteSong, useUpdateSong, useSongs } from "../hooks/useSongs";
 import { useSongEditStore } from "../stores/songEditStore";
-import type { UpdateSongData } from "../types/api";
+import type { UpdateSongData, Song } from "../types/api";
 
 function SongDashboard() {
   const { data: songsData, isLoading, isError } = useSongs();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Zustand here just to show up my knowledge of State Management libraries, for this simple case useState would be enough
-  const { selectedSong, isUpdateModalOpen, openUpdateModal, closeUpdateModal } = useSongEditStore();
+  const { selectedSong, openUpdateModal, closeUpdateModal } = useSongEditStore();
   const { mutate: createSongHandler } = useCreateSong();
   const { mutate: updateSongHandler } = useUpdateSong();
   const { mutate: deleteSongHandler } = useDeleteSong();
@@ -47,7 +47,7 @@ function SongDashboard() {
   };
 
   const handleDeleteSong = (id: string | number) => {
-    deleteSongHandler(id);
+    deleteSongHandler(id.toString());
   }
 
   return (

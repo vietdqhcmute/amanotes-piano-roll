@@ -21,19 +21,26 @@ const InstrumentSelect: React.FC = () => {
 
   const [isAddNoteModalOpen, setIsAddNoteModalOpen] = useState(false);
   const selectedInstrumentIds = tracksData?.map((track: Track) => track.instrument?.id) || [];
-  const instrumentOptions = instrumentsData && instrumentsData.map((inst: Instrument) => ({
+  const instrumentOptions = instrumentsData?.map((inst: Instrument) => ({
     value: inst.id,
     label: inst.label,
     color: inst.color,
   }));
 
-  const onAddTrackInstrument = useCallback((value: string) => {
-    createTrack({ instrumentId: value });
-  }, [createTrack]);
+  const onAddTrackInstrument = useCallback((value: number | undefined) => {
+    if (value !== undefined && currentSongId) {
+      createTrack({ instrumentId: value, songId: parseInt(currentSongId) });
+    }
+  }, [createTrack, currentSongId]);
 
-  const onRemoveTrackInstrument = useCallback((value: string) => {
-    deleteTrack({ instrumentId: value });
-  }, [deleteTrack]);
+  const onRemoveTrackInstrument = useCallback((value: number | undefined) => {
+    if (value !== undefined) {
+      const trackToDelete = tracksData?.find(track => track.instrument?.id === value);
+      if (trackToDelete) {
+        deleteTrack(trackToDelete.id.toString());
+      }
+    }
+  }, [deleteTrack, tracksData]);
 
   const handleAddNote = useCallback((values: CreateNoteData) => {
     if (currentSongId) {
