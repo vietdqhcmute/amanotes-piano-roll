@@ -6,7 +6,8 @@ import useCustomNotification from '../context/Notification/useCustomNotification
 export const noteKeys = {
   all: ['notes'] as const,
   lists: () => [...noteKeys.all, 'list'] as const,
-  list: (songId: string, filters?: Record<string, any>) => [...noteKeys.lists(), songId, { filters }] as const,
+  list: (songId: string, filters?: Record<string, any>) =>
+    [...noteKeys.lists(), songId, { filters }] as const,
   details: () => [...noteKeys.all, 'detail'] as const,
   detail: (songId: string, id: string) => [...noteKeys.details(), songId, id] as const,
 };
@@ -37,7 +38,7 @@ export const useCreateNote = (songId: string) => {
       queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
       queryClient.refetchQueries({ queryKey: noteKeys.list(songId) });
     },
-    onError: (error) => {
+    onError: error => {
       if (error.message.includes('422')) {
         notifyError('Can not create note that overlaps with an existing note.');
         return;

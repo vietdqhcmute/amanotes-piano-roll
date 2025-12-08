@@ -1,4 +1,4 @@
-const colorPalette = ["#ffffff", "#2E1A65", "#C3C0CC", "#E92384", '#9307BD', '#A81DB6']
+const colorPalette = ['#ffffff', '#2E1A65', '#C3C0CC', '#E92384', '#9307BD', '#A81DB6'];
 
 export const colors = {
   colorPrimary: colorPalette[1], // #2E1A65 - Dark Blue as primary
@@ -11,7 +11,7 @@ export const colors = {
   borderRadius: 8,
   colorBorder: colorPalette[2], // #C3C0CC - Light gray for borders
   colorHighlight: colorPalette[5], // #A81DB6 - Light purple for highlights
-}
+};
 
 export const theme = {
   token: colors,
@@ -28,4 +28,4 @@ export const theme = {
       colorBgContainer: colorPalette[0],
     },
   },
-}
+};

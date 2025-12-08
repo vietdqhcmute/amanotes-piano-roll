@@ -20,18 +20,22 @@ const CreateSongModal: React.FC<CreateSongModalProps> = ({ open, onOk, onCancel 
   const [form] = Form.useForm();
   const { data } = useTags();
 
-  const tagOptions = data?.map((tag: Tag) => ({
-    label: tag.label,
-    value: tag.id
-  })) || [];
+  const tagOptions =
+    data?.map((tag: Tag) => ({
+      label: tag.label,
+      value: tag.id,
+    })) || [];
 
   const handleOk = () => {
-    form.validateFields().then(values => {
-      onOk(values);
-      form.resetFields();
-    }).catch(info => {
-      console.log('Validate Failed:', info);
-    });
+    form
+      .validateFields()
+      .then(values => {
+        onOk(values);
+        form.resetFields();
+      })
+      .catch(info => {
+        console.log('Validate Failed:', info);
+      });
   };
 
   const handleCancel = () => {
@@ -41,71 +45,49 @@ const CreateSongModal: React.FC<CreateSongModalProps> = ({ open, onOk, onCancel 
 
   return (
     <Modal
-      title="Create New Song"
+      title='Create New Song'
       open={open}
       onOk={handleOk}
       onCancel={handleCancel}
-      okText="Create"
-      cancelText="Cancel"
+      okText='Create'
+      cancelText='Cancel'
       maskClosable={false}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        requiredMark={false}
-      >
+      <Form form={form} layout='vertical' requiredMark={false}>
         <Form.Item
-          name="name"
-          label="Song Name"
+          name='name'
+          label='Song Name'
           rules={[{ required: true, message: 'Please input the song name!' }]}
         >
-          <Input placeholder="Enter song name" />
+          <Input placeholder='Enter song name' />
         </Form.Item>
 
         <Form.Item
-          name="description"
-          label="Description"
+          name='description'
+          label='Description'
           rules={[{ required: true, message: 'Please input the description!' }]}
         >
-          <Input.TextArea
-            placeholder="Enter song description"
-            rows={3}
-          />
+          <Input.TextArea placeholder='Enter song description' rows={3} />
         </Form.Item>
 
         <Form.Item
-          name="duration"
-          label="Duration (seconds)"
+          name='duration'
+          label='Duration (seconds)'
           rules={[{ required: true, message: 'Please input the duration!' }]}
         >
-          <Input
-            type="number"
-            placeholder="Enter duration in seconds"
-            min={1}
-          />
+          <Input type='number' placeholder='Enter duration in seconds' min={1} />
         </Form.Item>
 
-        <Form.Item
-          name="bpm"
-          label="BPM (Beats Per Minute)"
-        >
-          <Input
-            type="number"
-            placeholder="Enter BPM"
-            defaultValue={120}
-            min={1}
-          />
+        <Form.Item name='bpm' label='BPM (Beats Per Minute)'>
+          <Input type='number' placeholder='Enter BPM' defaultValue={120} min={1} />
         </Form.Item>
 
-        <Form.Item
-          name="tag_ids"
-          label="Tags"
-        >
+        <Form.Item name='tag_ids' label='Tags'>
           <Select
-            mode="multiple"
+            mode='multiple'
             allowClear
             style={{ width: '100%' }}
-            placeholder="Please select"
+            placeholder='Please select'
             options={tagOptions}
           />
         </Form.Item>

@@ -13,11 +13,7 @@ export interface UpdateSongModalProps {
   loading?: boolean;
 }
 
-const UpdateSongModal: React.FC<UpdateSongModalProps> = ({
-  onOk,
-  onCancel,
-  loading = false,
-}) => {
+const UpdateSongModal: React.FC<UpdateSongModalProps> = ({ onOk, onCancel, loading = false }) => {
   const [form] = Form.useForm();
   const { data: tags } = useTags();
   const { selectedSong, isUpdateModalOpen } = useSongEditStore();
@@ -54,74 +50,42 @@ const UpdateSongModal: React.FC<UpdateSongModalProps> = ({
       open={isUpdateModalOpen}
       onCancel={handleCancel}
       footer={[
-        <Button key="cancel" onClick={handleCancel}>
+        <Button key='cancel' onClick={handleCancel}>
           Cancel
         </Button>,
-        <Button key="submit" type="primary" loading={loading} onClick={handleOk}>
+        <Button key='submit' type='primary' loading={loading} onClick={handleOk}>
           Update Song
         </Button>,
       ]}
       destroyOnClose
     >
-      <Form
-        form={form}
-        layout="vertical"
-        requiredMark={false}
-      >
+      <Form form={form} layout='vertical' requiredMark={false}>
         <Form.Item
-          name="name"
-          label="Song Name"
+          name='name'
+          label='Song Name'
           rules={[{ required: true, message: 'Please enter song name' }]}
         >
-          <Input placeholder="Enter song name" />
+          <Input placeholder='Enter song name' />
+        </Form.Item>
+
+        <Form.Item name='description' label='Description'>
+          <TextArea placeholder='Enter song description' rows={3} showCount maxLength={500} />
         </Form.Item>
 
         <Form.Item
-          name="description"
-          label="Description"
-        >
-          <TextArea
-            placeholder="Enter song description"
-            rows={3}
-            showCount
-            maxLength={500}
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="duration"
-          label="Duration (seconds)"
+          name='duration'
+          label='Duration (seconds)'
           rules={[{ required: true, message: 'Please enter duration' }]}
         >
-          <InputNumber
-            placeholder="Duration in seconds"
-            min={1}
-            style={{ width: '100%' }}
-          />
+          <InputNumber placeholder='Duration in seconds' min={1} style={{ width: '100%' }} />
         </Form.Item>
 
-        <Form.Item
-          name="bpm"
-          label="BPM (Beats Per Minute)"
-        >
-          <InputNumber
-            placeholder="Enter BPM"
-            min={1}
-            max={300}
-            style={{ width: '100%' }}
-          />
+        <Form.Item name='bpm' label='BPM (Beats Per Minute)'>
+          <InputNumber placeholder='Enter BPM' min={1} max={300} style={{ width: '100%' }} />
         </Form.Item>
 
-        <Form.Item
-          name="tagIds"
-          label="Tags"
-        >
-          <Select
-            mode="multiple"
-            placeholder="Select tags"
-            allowClear
-            loading={!tags}
-          >
+        <Form.Item name='tagIds' label='Tags'>
+          <Select mode='multiple' placeholder='Select tags' allowClear loading={!tags}>
             {tags?.map(tag => (
               <Option key={tag.id} value={tag.id}>
                 {tag.label}

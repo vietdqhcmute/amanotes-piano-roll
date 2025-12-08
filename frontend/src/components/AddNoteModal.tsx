@@ -41,30 +41,26 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({
 
   return (
     <Modal
-      title="Add New Note"
+      title='Add New Note'
       open={open}
       onCancel={handleCancel}
       footer={[
-        <Button key="cancel" onClick={handleCancel}>
+        <Button key='cancel' onClick={handleCancel}>
           Cancel
         </Button>,
-        <Button key="submit" type="primary" loading={loading} onClick={handleOk}>
+        <Button key='submit' type='primary' loading={loading} onClick={handleOk}>
           Add Note
         </Button>,
       ]}
       destroyOnClose
     >
-      <Form
-        form={form}
-        layout="vertical"
-        requiredMark={false}
-      >
+      <Form form={form} layout='vertical' requiredMark={false}>
         <Form.Item
-          name="trackId"
-          label="Track"
+          name='trackId'
+          label='Track'
           rules={[{ required: true, message: 'Please select a track' }]}
         >
-          <Select placeholder="Select track">
+          <Select placeholder='Select track'>
             {tracks.map(track => (
               <Option key={track.id} value={track.id}>
                 {track.instrument?.label || `Track ${track.id}`}
@@ -74,16 +70,20 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({
         </Form.Item>
 
         <Form.Item
-          name="time"
-          label="Time (seconds)"
+          name='time'
+          label='Time (seconds)'
           rules={[
             { required: true, message: 'Please enter time' },
             { type: 'number', min: 0, message: 'Time must be at least 0' },
-            { type: 'number', max: songDuration, message: `Time cannot exceed song duration (${songDuration}s)` }
+            {
+              type: 'number',
+              max: songDuration,
+              message: `Time cannot exceed song duration (${songDuration}s)`,
+            },
           ]}
         >
           <InputNumber
-            placeholder="Enter time in seconds"
+            placeholder='Enter time in seconds'
             min={0}
             max={songDuration}
             step={0.1}
@@ -92,12 +92,9 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({
           />
         </Form.Item>
 
-        <Form.Item
-          name="description"
-          label="Description"
-        >
+        <Form.Item name='description' label='Description'>
           <TextArea
-            placeholder="Enter note description (optional)"
+            placeholder='Enter note description (optional)'
             rows={3}
             showCount
             maxLength={200}

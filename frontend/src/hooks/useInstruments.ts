@@ -1,4 +1,4 @@
-import type { Instrument } from "../types/api";
+import type { Instrument } from '../types/api';
 import { useQuery } from '@tanstack/react-query';
 import { instrumentsApi } from '../utils/api';
 
@@ -14,4 +14,3 @@ export const useInstruments = () => {
     gcTime: 60 * 60 * 1000, // 1 hour
   });
 };
-

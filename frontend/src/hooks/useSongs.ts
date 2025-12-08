@@ -36,9 +36,9 @@ export const useCreateSong = () => {
       notifySuccess('Song created successfully');
       queryClient.invalidateQueries({ queryKey: songKeys.lists() });
     },
-    onError: (error) => {
+    onError: error => {
       notifyError(`Error creating song: ${error.message}`);
-    }
+    },
   });
 };
 
@@ -53,9 +53,9 @@ export const useUpdateSong = () => {
       queryClient.invalidateQueries({ queryKey: songKeys.lists() });
       queryClient.invalidateQueries({ queryKey: songKeys.detail(variables.id) });
     },
-    onError: (error) => {
+    onError: error => {
       notifyError(`Error updating song: ${error.message}`);
-    }
+    },
   });
 };
 

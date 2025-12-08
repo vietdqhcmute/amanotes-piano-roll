@@ -16,7 +16,15 @@ interface SongCardProps {
   onDelete?: (id: string | number) => void;
 }
 
-const SongCard: React.FC<SongCardProps> = ({ id, name, description, totalDuration, tags, onEdit, onDelete }) => {
+const SongCard: React.FC<SongCardProps> = ({
+  id,
+  name,
+  description,
+  totalDuration,
+  tags,
+  onEdit,
+  onDelete,
+}) => {
   const navigate = useNavigate();
 
   const handleTitleClick = () => {
@@ -52,24 +60,24 @@ const SongCard: React.FC<SongCardProps> = ({ id, name, description, totalDuratio
         padding: '16px',
         boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
         border: '1px solid #f0f0f0',
-        position: 'relative'
+        position: 'relative',
       }}
     >
       <div style={{ position: 'absolute', top: '8px', right: '8px' }}>
-        <Space size="small">
+        <Space size='small'>
           <Button
-            type="text"
+            type='text'
             icon={<EditOutlined />}
             onClick={handleEdit}
             style={{ color: colors.colorPrimary }}
-            title="Edit Song"
+            title='Edit Song'
           />
           <Button
-            type="text"
+            type='text'
             icon={<DeleteOutlined />}
             onClick={handleDelete}
             style={{ color: '#ff4d4f' }}
-            title="Delete Song"
+            title='Delete Song'
           />
         </Space>
       </div>
@@ -83,10 +91,10 @@ const SongCard: React.FC<SongCardProps> = ({ id, name, description, totalDuratio
               fontSize: '18px',
               transition: 'color 0.2s ease',
             }}
-            onMouseEnter={(e) => {
+            onMouseEnter={e => {
               e.currentTarget.style.color = colors.colorHighlight;
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={e => {
               e.currentTarget.style.color = colors.colorPrimary;
             }}
             onClick={handleTitleClick}
@@ -96,11 +104,11 @@ const SongCard: React.FC<SongCardProps> = ({ id, name, description, totalDuratio
         }
         description={
           <div style={{ marginTop: '8px' }}>
-            <Typography.Text type="secondary" style={{ fontSize: '14px' }}>
+            <Typography.Text type='secondary' style={{ fontSize: '14px' }}>
               {description}
             </Typography.Text>
             <br />
-            <Typography.Text type="secondary" style={{ fontSize: '12px', marginTop: '4px' }}>
+            <Typography.Text type='secondary' style={{ fontSize: '12px', marginTop: '4px' }}>
               Duration: {totalDuration}s
             </Typography.Text>
             <TagList tags={tags || []} />

@@ -1,6 +1,6 @@
-import type { CellData } from "../components/SongEditor/TrackRoller";
-import type { NotesOutputProps } from "../pages/SongDetail";
-import type { Note, Track } from "../types/api";
+import type { CellData } from '../components/SongEditor/TrackRoller';
+import type { NotesOutputProps } from '../pages/SongDetail';
+import type { Note, Track } from '../types/api';
 
 export const calculateTimeResolution = (notes: NotesOutputProps[]): number => {
   if (notes.length === 0) return 1;
@@ -11,8 +11,16 @@ export const calculateTimeResolution = (notes: NotesOutputProps[]): number => {
     if (timeStr.includes('.')) {
       const decimalPart = timeStr.split('.')[1];
 
-      if (decimalPart.includes('1') || decimalPart.includes('2') || decimalPart.includes('3') || decimalPart.includes('4') ||
-        decimalPart.includes('6') || decimalPart.includes('7') || decimalPart.includes('8') || decimalPart.includes('9')) {
+      if (
+        decimalPart.includes('1') ||
+        decimalPart.includes('2') ||
+        decimalPart.includes('3') ||
+        decimalPart.includes('4') ||
+        decimalPart.includes('6') ||
+        decimalPart.includes('7') ||
+        decimalPart.includes('8') ||
+        decimalPart.includes('9')
+      ) {
         smallestDecimal = Math.min(smallestDecimal, 0.1);
       } else if (decimalPart === '5') {
         smallestDecimal = Math.min(smallestDecimal, 0.5);
@@ -34,10 +42,10 @@ export const convertNotesToCells = (
     content: {
       title: note.title,
       description: note.description || '',
-      color: note.color
+      color: note.color,
     },
     isActive: true,
-    note
+    note,
   }));
 };
 
@@ -49,18 +57,15 @@ export const generateTimeLabels = (totalDuration: number, timeResolution: number
   });
 };
 
-export const mapNotesToTrackPositions = (
-  notes: Note[],
-  tracks: Track[]
-): NotesOutputProps[] => {
+export const mapNotesToTrackPositions = (notes: Note[], tracks: Track[]): NotesOutputProps[] => {
   const trackMap = new Map(
     tracks.map((track, index) => [
       track.id,
       {
         position: index + 1,
         label: track.instrument?.label || 'Unknown Instrument',
-        color: track.instrument?.color || '#000000'
-      }
+        color: track.instrument?.color || '#000000',
+      },
     ])
   );
 
