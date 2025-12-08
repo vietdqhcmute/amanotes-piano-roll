@@ -1,7 +1,7 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins %r{https://.*\.vercel\.app},
-            'https://access-interview-proj.vercel.app',
+            'https://amanotes-piano-roll.vercel.app',
             'localhost:5173',
             '127.0.0.1:5173',
             /http:\/\/localhost(:\d+)?/

@@ -1,9 +1,7 @@
 import type { Song, CreateSongData, UpdateSongData, Tag, CreateTagData, UpdateTagData, Note, CreateNoteData, UpdateNoteData, Instrument, Track, CreateTrackData, UpdateTrackData } from '../types/api';
 
-// Base API configuration
-export const API_BASE_URL = '/api/v1';
+export const API_BASE_URL = import.meta.env.VITE_API_URL + '/api/v1' || '/api/v1';
 
-// Utility function to convert camelCase to snake_case for API requests
 const camelToSnakeCase = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map(camelToSnakeCase);
