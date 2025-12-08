@@ -4,7 +4,7 @@
 A full-stack web application demonstrating modern development practices through an interactive piano roll interface for musical composition management. This project showcases proficiency in Ruby on Rails, React TypeScript, and scalable application architecture.
 
 ## 🌐 Live Demo
-**🚀 [Visit the Live Application](https://amanotes-piano-roll-rb2qgkhvm-viet-dos-projects-ff96f841.vercel.app/)**
+**🚀 [Visit the Live Application](https://amanotes-piano-roll.vercel.app)**
 
 ## 🎯 Project Highlights
 
