@@ -58,6 +58,7 @@ export interface CellData {
   content: CellContent;
   isActive?: boolean;
   onClick?: () => void;
+  note?: { time: number; track: number; title: string; description?: string; color: string; noteId: number };
 }
 
 export interface CellContent {

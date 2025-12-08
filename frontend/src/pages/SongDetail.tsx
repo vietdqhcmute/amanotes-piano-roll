@@ -63,9 +63,10 @@ function SongDetail() {
   }, [createNoteHandler, instrumentNameMapByTrackId, timeResolution]);
 
   const handleDeleteNoteFromCell = useCallback((cell: CellData) => {
-    // Assuming the cell content has the noteId, you may need to adjust this based on your actual data structure
-    if (cell.content && 'noteId' in cell.content) {
-      deleteNoteHandler({ noteId: (cell.content as any).noteId });
+    const note = cell.note
+    if (!note) return;
+    if (note && note.noteId) {
+      deleteNoteHandler({ noteId: note.noteId.toString() });
     }
   }, [deleteNoteHandler])
 
