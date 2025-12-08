@@ -4,7 +4,7 @@ class Api::V1::NotesController < ApplicationController
 
   # GET /api/v1/songs/:song_id/notes
   def index
-    @notes = @song.notes.includes(:track).all
+    @notes = @song.notes.includes(track: :instrument).all
     render_json @notes.as_json(
       include: {
         track: { only: [:id], include: { instrument: { only: [:id, :label] } } }

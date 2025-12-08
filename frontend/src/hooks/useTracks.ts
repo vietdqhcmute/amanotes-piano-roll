@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { tracksApi } from '../utils/api';
 import type { Track, CreateTrackData, UpdateTrackData } from '../types/api';
 
-// Query keys
 export const trackKeys = {
   all: ['tracks'] as const,
   lists: () => [...trackKeys.all, 'list'] as const,
@@ -11,7 +10,6 @@ export const trackKeys = {
   detail: (id: string) => [...trackKeys.details(), id] as const,
 };
 
-// Hooks
 export const useTracks = (songId: string) => {
   return useQuery<Track[]>({
     queryKey: trackKeys.lists(),

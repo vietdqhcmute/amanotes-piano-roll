@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { songsApi } from '../utils/api';
 import type { Song, CreateSongData, UpdateSongData } from '../types/api';
 
-// Query keys
 export const songKeys = {
   all: ['songs'] as const,
   lists: () => [...songKeys.all, 'list'] as const,
@@ -11,7 +10,6 @@ export const songKeys = {
   detail: (id: string) => [...songKeys.details(), id] as const,
 };
 
-// Hooks
 export const useSongs = () => {
   return useQuery<Song[]>({
     queryKey: songKeys.lists(),

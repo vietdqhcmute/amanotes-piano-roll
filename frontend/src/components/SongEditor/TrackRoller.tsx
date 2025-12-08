@@ -2,6 +2,7 @@
 import React, { useCallback, useMemo, type JSX } from 'react';
 import styled from 'styled-components';
 import Note from './Note';
+import { colors } from '../../utils/constants';
 
 const Grid = styled.div<{ columns: number; rows: number }>`
   display: grid;
@@ -46,9 +47,10 @@ const Cell = styled.div<{ row: number; column: number; isActive?: boolean }>`
   justify-content: center;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  border-radius: 4px;
 
   &:hover {
-    background-color: ${props => props.isActive ? '#A32EFF' : '#e9e9e9'};
+    background-color: ${props => props.isActive ? colors.colorHighlight : '#e9e9e9'};
   }
 `
 
@@ -58,6 +60,7 @@ export interface CellData {
   content: CellContent;
   isActive?: boolean;
   onClick?: () => void;
+  note?: { time: number; track: number; title: string; description?: string; color: string; noteId: number };
 }
 
 export interface CellContent {
@@ -99,7 +102,6 @@ const TrackRoller: React.FC<TrackRollProps> = ({
     }
   }, [headers, sidebarItems, onCellClickProp])
 
-  // Create a map for faster cell lookup
   const cellsMap = useMemo(() => {
     const map = new Map<string, CellData>();
     cells.forEach(cell => {
@@ -108,7 +110,6 @@ const TrackRoller: React.FC<TrackRollProps> = ({
     return map;
   }, [cells]);
 
-  // Generate all grid cells with click handlers - memoized for performance
   const allCells = useMemo(() => {
     const cellElements: JSX.Element[] = [];
 

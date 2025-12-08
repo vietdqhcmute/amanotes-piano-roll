@@ -1,12 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ConfigProvider } from 'antd'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import SongDashboard from './pages/SongDashboard'
 import SongDetail from './pages/SongDetail'
 import { theme as customTheme } from './utils/constants'
 
-// Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -28,7 +26,6 @@ function App() {
           </Routes>
         </BrowserRouter>
       </ConfigProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )
 }

@@ -22,7 +22,6 @@ const UpdateSongModal: React.FC<UpdateSongModalProps> = ({
   const { data: tags } = useTags();
   const { selectedSong, isUpdateModalOpen } = useSongEditStore();
 
-  // Reset form when song changes or modal opens
   useEffect(() => {
     if (isUpdateModalOpen && selectedSong) {
       form.setFieldsValue({

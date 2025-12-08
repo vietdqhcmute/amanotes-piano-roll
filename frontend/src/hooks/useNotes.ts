@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notesApi } from '../utils/api';
 import type { Note, CreateNoteData, UpdateNoteData } from '../types/api';
 
-// Query keys
 export const noteKeys = {
   all: ['notes'] as const,
   lists: () => [...noteKeys.all, 'list'] as const,
@@ -11,7 +10,6 @@ export const noteKeys = {
   detail: (songId: string, id: string) => [...noteKeys.details(), songId, id] as const,
 };
 
-// Hooks
 export const useNotes = (songId: string) => {
   return useQuery<Note[]>({
     queryKey: noteKeys.list(songId),
@@ -34,9 +32,7 @@ export const useCreateNote = (songId: string) => {
   return useMutation<Note, Error, { data: CreateNoteData }>({
     mutationFn: ({ data }) => notesApi.create(songId, data),
     onSuccess: () => {
-      // Invalidate and refetch notes for the specific song
       queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
-      // Force immediate refetch
       queryClient.refetchQueries({ queryKey: noteKeys.list(songId) });
     },
   });
