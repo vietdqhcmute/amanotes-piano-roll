@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notesApi } from '../utils/api';
 import type { Note, CreateNoteData, UpdateNoteData } from '../types/api';
+import useCustomNotification from '../context/Notification/useCustomNotification';
 
 export const noteKeys = {
   all: ['notes'] as const,
@@ -27,6 +28,7 @@ export const useNote = (songId: string, id: string) => {
 };
 
 export const useCreateNote = (songId: string) => {
+  const { notifyError } = useCustomNotification();
   const queryClient = useQueryClient();
 
   return useMutation<Note, Error, { data: CreateNoteData }>({
@@ -34,6 +36,13 @@ export const useCreateNote = (songId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
       queryClient.refetchQueries({ queryKey: noteKeys.list(songId) });
+    },
+    onError: (error) => {
+      if (error.message.includes('422')) {
+        notifyError('Can not create note that overlaps with an existing note.');
+        return;
+      }
+      notifyError(`Failed to create note: ${error.message}`);
     },
   });
 };
