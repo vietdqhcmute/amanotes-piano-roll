@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { tagsApi } from '../utils/api';
 import type { Tag, CreateTagData, UpdateTagData } from '../types/api';
 
-// Query keys
 export const tagKeys = {
   all: ['tags'] as const,
   lists: () => [...tagKeys.all, 'list'] as const,
@@ -11,7 +10,6 @@ export const tagKeys = {
   detail: (id: string) => [...tagKeys.details(), id] as const,
 };
 
-// Hooks
 export const useTags = () => {
   return useQuery<Tag[]>({
     queryKey: tagKeys.lists(),

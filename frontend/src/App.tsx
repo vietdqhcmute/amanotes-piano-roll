@@ -5,7 +5,6 @@ import SongDashboard from './pages/SongDashboard'
 import SongDetail from './pages/SongDetail'
 import { theme as customTheme } from './utils/constants'
 
-// Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

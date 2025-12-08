@@ -21,7 +21,6 @@ const PianoRollTour: React.FC<PianoRollTourProps> = ({
   addNoteButtonRef,
   trackRollerRef,
 }) => {
-  // Tour steps configuration
   const tourSteps = [
     {
       title: 'Welcome to Piano Roll Editor! 🎹',
@@ -61,7 +60,6 @@ const PianoRollTour: React.FC<PianoRollTourProps> = ({
 
   return (
     <>
-      {/* Tour Guide */}
       <Tour
         open={tourOpen}
         onClose={onTourClose}
@@ -70,7 +68,6 @@ const PianoRollTour: React.FC<PianoRollTourProps> = ({
         onFinish={onTourFinish}
       />
 
-      {/* Floating Help Button */}
       <FloatButton
         icon={<QuestionCircleOutlined />}
         type="primary"

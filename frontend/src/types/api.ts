@@ -1,4 +1,3 @@
-// Song related types
 export interface Song {
   id: number;
   name: string;
@@ -22,7 +21,6 @@ export interface CreateSongData {
 
 export interface UpdateSongData extends Partial<CreateSongData> {}
 
-// Tag related types
 export interface Tag {
   id: number;
   label: string;
@@ -37,7 +35,6 @@ export interface CreateTagData {
 
 export interface UpdateTagData extends Partial<CreateTagData> {}
 
-// Track related types
 export interface Track {
   id: number;
   songId: number;
@@ -56,7 +53,6 @@ export interface Instrument {
   color: string;
 }
 
-// Note related types
 export interface Note {
   id: number;
   songId: number;
@@ -76,7 +72,6 @@ export interface CreateNoteData {
 
 export interface UpdateNoteData extends Partial<CreateNoteData> {}
 
-// API Response types
 export interface ApiError {
   error: string;
 }

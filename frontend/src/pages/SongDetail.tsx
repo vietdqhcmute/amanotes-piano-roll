@@ -37,8 +37,8 @@ function SongDetail() {
   const addNoteButtonRef = useRef<HTMLButtonElement>(null);
   const trackRollerRef = useRef<HTMLDivElement>(null);
 
-  // Check if user has seen the tour before
   useEffect(() => {
+    // Check if user has seen the tour before
     const hasSeenTour = localStorage.getItem('pianoRollTourCompleted');
     if (!hasSeenTour) {
       // Delay tour start to ensure components are rendered

@@ -15,7 +15,6 @@ const camelToSnakeCase = (obj: any): any => {
   return obj;
 };
 
-// Generic API function
 export const apiRequest = async <T>(endpoint: string, options?: RequestInit): Promise<T> => {
   const url = `${API_BASE_URL}${endpoint}`;
 
@@ -27,14 +26,12 @@ export const apiRequest = async <T>(endpoint: string, options?: RequestInit): Pr
     ...options,
   };
 
-  // Convert request body from camelCase to snake_case if it's a JSON payload
   if (config.body && (config.headers as any)?.['Content-Type']?.includes('application/json')) {
     try {
       const parsedBody = JSON.parse(config.body as string);
       const snakeCaseBody = camelToSnakeCase(parsedBody);
       config.body = JSON.stringify(snakeCaseBody);
     } catch (e) {
-      // If parsing fails, keep original body
     }
   }
 
@@ -47,7 +44,6 @@ export const apiRequest = async <T>(endpoint: string, options?: RequestInit): Pr
   return response.json();
 };
 
-// API endpoints
 export const songsApi = {
   getAll: (): Promise<Song[]> => apiRequest<Song[]>('/songs'),
   getById: (id: string): Promise<Song> => apiRequest<Song>(`/songs/${id}`),

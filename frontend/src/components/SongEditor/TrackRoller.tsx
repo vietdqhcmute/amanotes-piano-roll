@@ -102,7 +102,6 @@ const TrackRoller: React.FC<TrackRollProps> = ({
     }
   }, [headers, sidebarItems, onCellClickProp])
 
-  // Create a map for faster cell lookup
   const cellsMap = useMemo(() => {
     const map = new Map<string, CellData>();
     cells.forEach(cell => {
@@ -111,7 +110,6 @@ const TrackRoller: React.FC<TrackRollProps> = ({
     return map;
   }, [cells]);
 
-  // Generate all grid cells with click handlers - memoized for performance
   const allCells = useMemo(() => {
     const cellElements: JSX.Element[] = [];
 
