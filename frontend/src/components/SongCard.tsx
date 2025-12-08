@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Typography, Button, Space } from 'antd';
+import { List, Typography, Button, Space, Modal } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { colors } from '../utils/constants';
@@ -30,7 +30,17 @@ const SongCard: React.FC<SongCardProps> = ({ id, name, description, totalDuratio
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onDelete?.(id);
+
+    Modal.confirm({
+      title: 'Delete Song',
+      content: `Are you sure you want to delete "${name}"? This action cannot be undone.`,
+      okText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      okType: 'danger',
+      onOk() {
+        onDelete?.(id);
+      },
+    });
   };
 
   return (
