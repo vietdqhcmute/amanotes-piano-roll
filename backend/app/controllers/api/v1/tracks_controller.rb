@@ -20,6 +20,12 @@ class Api::V1::TracksController < ApplicationController
   end
 
   def create
+    # Check if song already has 8 tracks
+    if @song.tracks.count >= 8
+      render_json({ error: 'Cannot create more than 8 tracks per song' }, status: :unprocessable_entity)
+      return
+    end
+
     @track = @song.tracks.build(track_params)
     if @track.save
       render_json @track.as_json(

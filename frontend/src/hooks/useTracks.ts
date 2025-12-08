@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { tracksApi } from '../utils/api';
 import type { Track, CreateTrackData, UpdateTrackData } from '../types/api';
+import useCustomNotification from '../context/Notification/useCustomNotification';
 
 export const trackKeys = {
   all: ['tracks'] as const,
@@ -26,6 +27,7 @@ export const useTrack = (songId: string, id: string) => {
 };
 
 export const useCreateTrack = (songId: string) => {
+  const { notifyError } = useCustomNotification()
   const queryClient = useQueryClient();
 
   return useMutation<Track, Error, CreateTrackData>({
@@ -33,6 +35,11 @@ export const useCreateTrack = (songId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: trackKeys.lists() });
     },
+    onError: (error) => {
+      if (error.message.includes('422')) {
+        notifyError('Cannot create more than 8 tracks per song');
+      }
+    }
   });
 };
 

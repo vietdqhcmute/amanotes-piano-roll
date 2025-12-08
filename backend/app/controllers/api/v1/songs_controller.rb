@@ -3,7 +3,7 @@ class Api::V1::SongsController < ApplicationController
 
   # GET /api/v1/songs
   def index
-    @songs = Song.includes(:tags).all
+    @songs = Song.includes(:tags).all.order(created_at: :desc)
     render_json @songs.as_json(
       include: {
         tags: { only: [:id, :label] }

@@ -6,9 +6,9 @@ import { colors } from '../../utils/constants';
 
 const Grid = styled.div<{ columns: number; rows: number }>`
   display: grid;
-  grid-template-columns: repeat(${props => Math.min(props.columns, 50)}, 100px);
-  grid-template-rows: repeat(${props => Math.min(props.rows, 100)}, 30px);
-  gap: 2px;
+  grid-template-columns: repeat(${props => Math.min(props.columns, 50)}, 1fr);
+  grid-template-rows: repeat(${props => Math.min(props.rows, 100)}, 40px);
+  gap: 0;
   overflow: auto;
   max-height: 80vh;
   max-width: 100vw;
@@ -18,7 +18,7 @@ const Header = styled.div<{ headerCount: number }>`
   grid-row: 1 / 2;
   display: grid;
   grid-template-columns: repeat(${props => props.headerCount}, 1fr);
-  gap: 2px;
+  gap: 0;
 `
 const HeaderElement = styled.span`
   display: flex;
@@ -31,9 +31,9 @@ const Sidebar = styled.div<{ sidebarCount: number }>`
   grid-row: 2 / ${props => props.sidebarCount + 2};
   display: grid;
   grid-template-rows: repeat(${props => props.sidebarCount}, 1fr);
-  gap: 2px;
+  gap: 0;
 `
-const SidebarElement = styled.span`
+const SidebarElement = styled.span<{ index: number }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,7 +47,11 @@ const Cell = styled.div<{ row: number; column: number; isActive?: boolean }>`
   justify-content: center;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  border-radius: 4px;
+  border-bottom: ${props => {
+    const dataRowIndex = props.row - 3;
+    // Add dark border for every 10th row (multiples of 10)
+    return (dataRowIndex + 1) % 10 === 0 ? '2px solid #a5a5a5' : '1px solid #d9d9d9';
+  }};
 
   &:hover {
     background-color: ${props => props.isActive ? colors.colorHighlight : '#e9e9e9'};
@@ -178,7 +182,7 @@ const TrackRoller: React.FC<TrackRollProps> = ({
           sidebarCount={sidebarItems.length}
         >
           {sidebarItems.map((item, index) => (
-            <SidebarElement key={index}>{item}</SidebarElement>
+            <SidebarElement key={index} index={index}>{item}</SidebarElement>
           ))}
         </Sidebar>
 
