@@ -6,7 +6,7 @@ import { colors } from '../../utils/constants';
 
 const Grid = styled.div<{ columns: number; rows: number }>`
   display: grid;
-  grid-template-columns: repeat(${props => Math.min(props.columns, 50)}, 1fr);
+  grid-template-columns: 50px repeat(${props => Math.min(props.columns - 1, 49)}, minmax(60px, 1fr));
   grid-template-rows: repeat(${props => Math.min(props.rows, 100)}, 40px);
   gap: 0;
   overflow: auto;
@@ -32,6 +32,7 @@ const Sidebar = styled.div<{ sidebarCount: number }>`
   display: grid;
   grid-template-rows: repeat(${props => props.sidebarCount}, 1fr);
   gap: 0;
+  max-width: 50px;
 `
 const SidebarElement = styled.span<{ index: number }>`
   display: flex;

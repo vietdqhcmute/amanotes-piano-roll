@@ -98,7 +98,7 @@ export const instrumentsApi = {
 
 export const tracksApi = {
   getAll: (songId: string): Promise<Track[]> => apiRequest<Track[]>(`/songs/${songId}/tracks`),
-  getById: (songId: string, id: string): Promise<Track> => apiRequest<Track>(`/songs/${songId}/tracks/${id}`),
+  getById: (songId: string): Promise<Track> => apiRequest<Track>(`/songs/${songId}/tracks/`),
   create: (songId: string, data: CreateTrackData): Promise<Track> => apiRequest<Track>(`/songs/${songId}/tracks`, {
     method: 'POST',
     body: JSON.stringify({ track: data }),

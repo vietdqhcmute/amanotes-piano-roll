@@ -13,16 +13,16 @@ export const trackKeys = {
 
 export const useTracks = (songId: string) => {
   return useQuery<Track[]>({
-    queryKey: trackKeys.lists(),
+    queryKey: trackKeys.list({ songId }),
     queryFn: () => tracksApi.getAll(songId),
     enabled: !!songId,
   });
 }
-export const useTrack = (songId: string, id: string) => {
+export const useTrack = (songId: string) => {
   return useQuery<Track>({
-    queryKey: trackKeys.detail(id),
-    queryFn: () => tracksApi.getById(songId, id),
-    enabled: !!songId && !!id,
+    queryKey: trackKeys.detail(songId),
+    queryFn: () => tracksApi.getById(songId),
+    enabled: !!songId,
   });
 };
 
