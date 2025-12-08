@@ -48,6 +48,22 @@ export const useCreateNote = (songId: string) => {
   });
 };
 
+export const useCreateMultipleNotes = (songId: string) => {
+  const { notifyError } = useCustomNotification();
+  const queryClient = useQueryClient();
+
+  return useMutation<Note[], Error, { data: CreateNoteData[] }>({
+    mutationFn: ({ data }) => notesApi.createMultiple(songId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
+      queryClient.refetchQueries({ queryKey: noteKeys.list(songId) });
+    },
+    onError: error => {
+      notifyError(`Failed to create notes: ${error.message}`);
+    },
+  });
+};
+
 export const useUpdateNote = () => {
   const queryClient = useQueryClient();
 

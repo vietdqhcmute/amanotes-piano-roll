@@ -1,4 +1,4 @@
-import { Layout, Card, Row, Col, Statistic } from 'antd';
+import { Layout, Card, Row, Col, Statistic, Button } from 'antd';
 import TrackRoller, { type CellData } from '../components/SongEditor/TrackRoller';
 import {
   convertNotesToCells,
@@ -16,6 +16,8 @@ import PianoRollTour from '../components/PianoRollTour';
 import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import { useCreateNote, useDeleteNote, useNotes } from '../hooks/useNotes';
 import { useTracks } from '../hooks/useTracks';
+import { useNoteEditStore } from '../stores/noteEditStore';
+import { deduplicatePendingNotes } from '../utils/noteUtils';
 
 export interface NotesOutputProps {
   noteId: number;
@@ -67,6 +69,7 @@ function SongDetail() {
   const description = songData?.description || '';
   const tags = songData?.tags || [];
   const trackLabels = tracksData?.map(track => track.instrument?.label || 'Unknown Instrument');
+  const trackColors = tracksData?.map(track => track.instrument?.color || '#000000');
 
   const notes = useMemo(
     () => mapNotesToTrackPositions(notesData || [], tracksData || []),
@@ -130,6 +133,27 @@ function SongDetail() {
     [handleAddNoteToEmptyCell, handleDeleteNoteFromCell]
   );
 
+  const { pendingAddedNotes, pendingDeletedNotes } = useNoteEditStore();
+
+  const handleSubmit = () => {
+    const [uniqueAddedNotes, uniqueDeletedNotes] = deduplicatePendingNotes(
+      pendingAddedNotes,
+      pendingDeletedNotes
+    );
+    console.log({ pendingAddedNotes });
+    const addNoteRequestData = uniqueAddedNotes.map(note => ({
+      time: note.time,
+      trackId: instrumentNameMapByTrackId.get(note.content.title || ''),
+    }));
+
+    const deleteNoteIds = uniqueDeletedNotes
+      .map(note => note.note.noteId)
+      .filter((id): id is number => id !== undefined)
+      .map(id => id.toString());
+
+    console.log({ addNoteRequestData, deleteNoteIds });
+  };
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <PageHeader title='Song Detail' backLink='/song-dashboard' />
@@ -172,8 +196,12 @@ function SongDetail() {
         </div>
         {trackLabels && trackLabels.length > 0 && (
           <div ref={trackRollerRef}>
+            <Button type='primary' onClick={handleSubmit}>
+              Submit
+            </Button>
             <TrackRoller
               headers={trackLabels}
+              headerColors={trackColors}
               sidebarItems={timeLabels}
               cells={cells}
               onCellClick={cellClickHandler}

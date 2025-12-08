@@ -113,6 +113,16 @@ export const notesApi = {
     apiRequest<void>(`/songs/${songId}/notes/${id}`, {
       method: 'DELETE',
     }),
+  createMultiple: (songId: string, data: CreateNoteData[]): Promise<Note[]> =>
+    apiRequest<Note[]>(`/songs/${songId}/notes/create_multiple`, {
+      method: 'POST',
+      body: JSON.stringify({ notes: data }),
+    }),
+  deleteMultiple: (songId: string, ids: string[]): Promise<void> =>
+    apiRequest<void>(`/songs/${songId}/notes/delete_multiple`, {
+      method: 'DELETE',
+      body: JSON.stringify({ note_ids: ids }),
+    }),
 };
 
 export const instrumentsApi = {

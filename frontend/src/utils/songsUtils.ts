@@ -37,6 +37,7 @@ export const convertNotesToCells = (
 ): CellData[] => {
   return notes.map(note => ({
     // Convert time based on dynamic resolution: time / resolution gives the index, +2 for header row + 1-based indexing
+    cellId: `r${Math.round(note.time / timeResolution) + 2}_c${note.track + 1}`,
     rowNumber: Math.round(note.time / timeResolution) + 2,
     columnNumber: note.track + 1, // +1 for sidebar column + 1-based indexing
     content: {
