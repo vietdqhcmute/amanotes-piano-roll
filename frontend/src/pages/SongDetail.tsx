@@ -1,4 +1,5 @@
 import { Layout, Card, Row, Col, Statistic, Button } from 'antd';
+import { useDebouncedCallback } from 'use-debounce';
 import TrackRoller from '../components/SongEditor/TrackRoller';
 import {
   convertNotesToCells,
@@ -87,10 +88,10 @@ function SongDetail() {
   }, [tracksData]);
 
   const { pendingAddedNotes, pendingDeletedNotes } = useNoteEditStore();
-  const { mutate: createMultipleNotes } = useCreateMultipleNotes(currentSongId || '');
-  const { mutate: deleteMultipleNotes } = useDeleteMultipleNotes(currentSongId || ''); // Reusing useDeleteNote for multiple deletions
+  const { mutate: createMultipleNotes, isLoading: isCreatingMultiple } = useCreateMultipleNotes(currentSongId || '');
+  const { mutate: deleteMultipleNotes, isLoading: isDeletingMultiple } = useDeleteMultipleNotes(currentSongId || ''); // Reusing useDeleteNote for multiple deletions
 
-  const handleSubmit = () => {
+  const handleSubmitUpdateNotes = () => {
     const { dedupedAddedNotes, dedupedDeletedNotes } = deduplicatePendingNotes(
       pendingAddedNotes,
       pendingDeletedNotes
@@ -112,6 +113,11 @@ function SongDetail() {
       deleteMultipleNotes({ noteIds: deleteNoteIds });
     }
   };
+
+  const handleDebouncedSubmit = useDebouncedCallback(() => {
+    console.log('Auto-saving changes...');
+    handleSubmitUpdateNotes();
+  }, 1000);
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -155,14 +161,12 @@ function SongDetail() {
         </div>
         {trackLabels && trackLabels.length > 0 && (
           <div ref={trackRollerRef}>
-            <Button type='primary' onClick={handleSubmit}>
-              Submit
-            </Button>
             <TrackRoller
               headers={trackLabels}
               headerColors={trackColors}
               sidebarItems={timeLabels}
               cells={cells}
+              onCellClick={handleDebouncedSubmit}
             />
           </div>
         )}

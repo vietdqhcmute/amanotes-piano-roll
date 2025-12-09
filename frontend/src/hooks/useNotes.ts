@@ -54,7 +54,7 @@ export const useCreateMultipleNotes = (songId: string) => {
   const { notifyError } = useCustomNotification();
   const queryClient = useQueryClient();
 
-  return useMutation<Note[], Error, { data: CreateNoteData[] }>({
+  const mutation = useMutation<Note[], Error, { data: CreateNoteData[] }>({
     mutationFn: ({ data }) => notesApi.createMultiple(songId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
@@ -65,6 +65,11 @@ export const useCreateMultipleNotes = (songId: string) => {
       notifyError(`Failed to create notes: ${error.message}`);
     },
   });
+
+  return {
+    mutate: mutation.mutate,
+    isLoading: mutation.isPending,
+  };
 };
 
 export const useUpdateNote = () => {
@@ -97,7 +102,7 @@ export const useDeleteMultipleNotes = (songId: string) => {
 
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, { noteIds: string[] }>({
+  const mutation = useMutation<void, Error, { noteIds: string[] }>({
     mutationFn: ({ noteIds }) => notesApi.deleteMultiple(songId, noteIds),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
@@ -105,4 +110,9 @@ export const useDeleteMultipleNotes = (songId: string) => {
       setPendingDeletedNotes([]);
     },
   });
+
+  return {
+    mutate: mutation.mutate,
+    isLoading: mutation.isPending,
+  };
 };

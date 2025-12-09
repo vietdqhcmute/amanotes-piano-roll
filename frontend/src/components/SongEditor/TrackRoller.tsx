@@ -36,6 +36,7 @@ interface TrackRollProps {
   headerColors?: string[];
   sidebarItems?: string[];
   cells?: CellData[];
+  onCellClick?: () => void;
 }
 
 
@@ -44,6 +45,7 @@ const TrackRoller: React.FC<TrackRollProps> = ({
   headerColors = [],
   sidebarItems = DEFAULT_SIDEBAR_ITEMS,
   cells = [],
+  onCellClick: onCellClickProp,
 }) => {
   const { currentNotes } = useNoteEditStore();
   const {
@@ -109,8 +111,11 @@ const TrackRoller: React.FC<TrackRollProps> = ({
       } else {
         onNoteAdd(rowIndex, columnIndex, headerLabel, sidebarLabel);
       }
+      if (onCellClickProp) {
+        onCellClickProp();
+      }
     },
-    [headers, onNoteAdd, onNoteDelete, sidebarItems]
+    [headers, onCellClickProp, onNoteAdd, onNoteDelete, sidebarItems]
   );
 
   const cellsMap = useMemo(() => {
@@ -126,7 +131,7 @@ const TrackRoller: React.FC<TrackRollProps> = ({
 
     // Limit grid size to prevent UI blocking
     const maxRows = Math.min(totalRows, 100); // Limit to 100 rows max
-    const maxCols = Math.min(totalColumns, 50); // Limit to 50 columns max
+    const maxCols = Math.min(totalColumns, 10); // Limit to 10 columns max
 
     // Generate cells for the main grid area (excluding header and sidebar)
     for (let row = 2; row <= maxRows; row++) {
