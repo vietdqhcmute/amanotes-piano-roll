@@ -37,14 +37,16 @@ export const SidebarElement = styled.span<{ index: number }>`
   justify-content: center;
 `;
 
-export const Cell = styled.div<{ row: number; column: number; isActive?: boolean }>`
+export const Cell = styled.div<{ row: number; column: number; isActive?: boolean; disabled?: boolean }>`
   grid-column: ${props => props.column} / ${props => props.column + 1};
   grid-row: ${props => props.row} / ${props => props.row + 1};
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   transition: background-color 0.2s ease;
+  opacity: ${props => (props.disabled ? 0.6 : 1)};
+  pointer-events: ${props => (props.disabled ? 'none' : 'auto')};
   border-bottom: ${props => {
     const dataRowIndex = props.row - 3;
     // Add dark border for every 10th row (multiples of 10)
@@ -52,6 +54,9 @@ export const Cell = styled.div<{ row: number; column: number; isActive?: boolean
   }};
 
   &:hover {
-    background-color: ${props => (props.isActive ? colors.colorHighlight : '#e9e9e9')};
+    background-color: ${props => {
+      if (props.disabled) return 'transparent';
+      return props.isActive ? colors.colorHighlight : '#e9e9e9';
+    }};
   }
 `;

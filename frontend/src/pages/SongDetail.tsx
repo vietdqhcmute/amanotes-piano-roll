@@ -1,4 +1,4 @@
-import { Layout, Card, Row, Col, Statistic } from 'antd';
+import { Layout, Card, Row, Col, Statistic, Spin } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
 import TrackRoller from '../components/SongEditor/TrackRoller';
 import {
@@ -89,8 +89,10 @@ function SongDetail() {
   }, [tracksData]);
 
   const { pendingAddedNotes, pendingDeletedNotes } = useNoteEditStore();
-  const { mutate: createMultipleNotes } = useCreateMultipleNotes(currentSongId || '');
-  const { mutate: deleteMultipleNotes } = useDeleteMultipleNotes(currentSongId || ''); // Reusing useDeleteNote for multiple deletions
+  const { mutate: createMultipleNotes, isLoading: isCreating } = useCreateMultipleNotes(currentSongId || '');
+  const { mutate: deleteMultipleNotes, isLoading: isDeleting } = useDeleteMultipleNotes(currentSongId || ''); // Reusing useDeleteNote for multiple deletions
+
+  const isLoading = isCreating || isDeleting;
 
   const handleSubmitUpdateNotes = () => {
     const { dedupedAddedNotes, dedupedDeletedNotes } = deduplicatePendingNotes(
@@ -160,14 +162,19 @@ function SongDetail() {
         <div ref={instrumentSelectRef}>
           <InstrumentSelect ref={addNoteButtonRef} />
         </div>
+
         {trackLabels && trackLabels.length > 0 && (
           <div ref={trackRollerRef}>
+            <div style={{ position: 'absolute', width: '100%', display: 'flex', justifyContent: 'space-around' }}>
+              <Spin spinning={isLoading} />
+            </div>
             <TrackRoller
               headers={trackLabels}
               headerColors={trackColors}
               sidebarItems={timeLabels}
               cells={cells}
               onCellClick={handleDebouncedSubmit}
+              disabled={isLoading}
             />
           </div>
         )}

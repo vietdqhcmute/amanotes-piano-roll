@@ -37,6 +37,7 @@ interface TrackRollProps {
   sidebarItems?: string[];
   cells?: CellData[];
   onCellClick?: () => void;
+  disabled?: boolean;
 }
 
 
@@ -46,6 +47,7 @@ const TrackRoller: React.FC<TrackRollProps> = ({
   sidebarItems = DEFAULT_SIDEBAR_ITEMS,
   cells = [],
   onCellClick: onCellClickProp,
+  disabled = false
 }) => {
   const { currentNotes } = useNoteEditStore();
   const {
@@ -147,7 +149,8 @@ const TrackRoller: React.FC<TrackRollProps> = ({
               row={row}
               column={col}
               isActive={existingCell.isActive}
-              onClick={() => onCellClick(row, col, existingCell)}
+              disabled={disabled}
+              onClick={disabled ? undefined : () => onCellClick(row, col, existingCell)}
             >
               <Note cell={existingCell} />
             </Cell>
@@ -155,14 +158,20 @@ const TrackRoller: React.FC<TrackRollProps> = ({
         } else {
           // Create empty clickable cell
           cellElements.push(
-            <Cell key={cellKey} row={row} column={col} onClick={() => onCellClick(row, col)} />
+            <Cell
+              key={cellKey}
+              row={row}
+              column={col}
+              disabled={disabled}
+              onClick={disabled ? undefined : () => onCellClick(row, col)}
+            />
           );
         }
       }
     }
 
     return cellElements;
-  }, [cellsMap, onCellClick, totalColumns, totalRows]);
+  }, [cellsMap, onCellClick, totalColumns, totalRows, disabled]);
 
   useEffect(() => {
     setCurrentNotes(cells);
