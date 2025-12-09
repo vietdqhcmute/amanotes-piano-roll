@@ -13,16 +13,21 @@ interface PageHeaderProps {
 
 const PageHeader: React.FC<PageHeaderProps> = ({ title, backLink }) => {
   return (
-    <Header style={{
-      display: 'flex',
-      alignItems: 'center',
-      background: '#fff',
-      padding: '0 24px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-    }}>
+    <Header
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        background: '#fff',
+        padding: '0 24px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+      }}
+    >
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         {backLink && (
-          <Link to={backLink} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+          <Link
+            to={backLink}
+            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}
+          >
             <ArrowLeftOutlined style={{ fontSize: '20px', color: colors.colorPrimary }} />
           </Link>
         )}
@@ -31,7 +36,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, backLink }) => {
         </Typography.Title>
       </div>
     </Header>
-  )
-}
+  );
+};
 
-export default PageHeader
+export default PageHeader;

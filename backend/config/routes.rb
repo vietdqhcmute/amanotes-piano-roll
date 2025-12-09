@@ -13,7 +13,12 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :songs, only: [:index, :show, :create, :update, :destroy] do
-        resources :notes, only: [:index, :show, :create, :update, :destroy]
+        resources :notes, only: [:index, :show, :create, :update, :destroy] do
+          collection do
+            post :create_multiple
+            delete :delete_multiple
+          end
+        end
         resources :tracks, only: [:index, :show, :create, :update, :destroy]
       end
       resources :tags, only: [:index, :show, :create, :update, :destroy]

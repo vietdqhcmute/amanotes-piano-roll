@@ -15,6 +15,7 @@ This application demonstrates:
 - **Professional UI/UX**: Industry-standard component library integration
 - **CI/CD Pipeline**: Automated deployment with GitHub Actions and quality gates
 - **Production Deployment**: Successfully deployed and accessible online
+- Realtime Piano Role: Using cache mechanism to have better UX for the main feature
 
 ## 🚀 Key Features & Technical Challenges Solved
 

@@ -39,6 +39,30 @@ class Api::V1::NotesController < ApplicationController
     render_json({ message: 'Note deleted successfully' }, status: :ok)
   end
 
+  def create_multiple
+    notes = create_multiple_params.map { |note_param| @song.notes.build(note_param) }
+    if notes.all?(&:valid?)
+      notes.each(&:save)
+      render_json notes, status: :created
+    else
+      errors = notes.map.with_index do |note, index|
+        { index: index, errors: note.errors.full_messages } unless note.valid?
+      end.compact
+      render_json({ errors: errors }, status: :unprocessable_entity)
+    end
+  end
+
+  def delete_multiple
+    note_ids = delete_multiple_params
+    notes = @song.notes.where(id: note_ids)
+    if notes.size == note_ids.size
+      notes.destroy_all
+      render_json({ message: 'Notes deleted successfully' }, status: :ok)
+    else
+      render_json({ error: 'Some notes not found' }, status: :not_found)
+    end
+  end
+
   private
 
   def set_song
@@ -55,5 +79,15 @@ class Api::V1::NotesController < ApplicationController
 
   def note_params
     params.require(:note).permit(:time, :description, :track_id)
+  end
+
+  def create_multiple_params
+    params.require(:notes).map do |note|
+      note.permit(:time, :description, :track_id)
+    end
+  end
+
+  def delete_multiple_params
+    params.require(:note_ids)
   end
 end

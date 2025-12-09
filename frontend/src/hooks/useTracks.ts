@@ -17,7 +17,7 @@ export const useTracks = (songId: string) => {
     queryFn: () => tracksApi.getAll(songId),
     enabled: !!songId,
   });
-}
+};
 export const useTrack = (songId: string) => {
   return useQuery<Track>({
     queryKey: trackKeys.detail(songId),
@@ -27,19 +27,19 @@ export const useTrack = (songId: string) => {
 };
 
 export const useCreateTrack = (songId: string) => {
-  const { notifyError } = useCustomNotification()
+  const { notifyError } = useCustomNotification();
   const queryClient = useQueryClient();
 
   return useMutation<Track, Error, CreateTrackData>({
-    mutationFn: (data) => tracksApi.create(songId, data),
+    mutationFn: data => tracksApi.create(songId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: trackKeys.lists() });
     },
-    onError: (error) => {
+    onError: error => {
       if (error.message.includes('422')) {
         notifyError('Cannot create more than 8 tracks per song');
       }
-    }
+    },
   });
 };
 
@@ -53,12 +53,12 @@ export const useUpdateTrack = (songId: string) => {
       queryClient.invalidateQueries({ queryKey: trackKeys.detail(variables.id) });
     },
   });
-}
+};
 export const useDeleteTrack = (songId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, string>({
-    mutationFn: (id) => tracksApi.delete(songId, id),
+    mutationFn: id => tracksApi.delete(songId, id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: trackKeys.lists() });
     },

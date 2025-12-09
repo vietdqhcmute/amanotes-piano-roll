@@ -9,10 +9,10 @@ interface SongEditStore {
   closeUpdateModal: () => void;
 }
 
-export const useSongEditStore = create<SongEditStore>((set) => ({
+export const useSongEditStore = create<SongEditStore>(set => ({
   selectedSong: null,
   isUpdateModalOpen: false,
-  setSelectedSong: (song) => set({ selectedSong: song }),
-  openUpdateModal: (song) => set({ selectedSong: song, isUpdateModalOpen: true }),
+  setSelectedSong: song => set({ selectedSong: song }),
+  openUpdateModal: song => set({ selectedSong: song, isUpdateModalOpen: true }),
   closeUpdateModal: () => set({ selectedSong: null, isUpdateModalOpen: false }),
 }));

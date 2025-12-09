@@ -27,24 +27,33 @@ const InstrumentSelect = forwardRef<HTMLButtonElement>((_, ref) => {
     color: inst.color,
   }));
 
-  const onAddTrackInstrument = useCallback((value: number | undefined) => {
-    if (value !== undefined && currentSongId) {
-      createTrack({ instrumentId: value, songId: parseInt(currentSongId) });
-    }
-  }, [createTrack, currentSongId]);
+  const onAddTrackInstrument = useCallback(
+    (value: number | undefined) => {
+      if (value !== undefined && currentSongId) {
+        createTrack({ instrumentId: value, songId: parseInt(currentSongId) });
+      }
+    },
+    [createTrack, currentSongId]
+  );
 
-  const onRemoveTrackInstrument = useCallback((value: number | undefined) => {
-    if (value !== undefined) {
-      deleteTrack(value.toString());
-    }
-  }, [deleteTrack]);
+  const onRemoveTrackInstrument = useCallback(
+    (value: number | undefined) => {
+      if (value !== undefined) {
+        deleteTrack(value.toString());
+      }
+    },
+    [deleteTrack]
+  );
 
-  const handleAddNote = useCallback((values: CreateNoteData) => {
-    if (currentSongId) {
-      createNote({ data: values });
-      setIsAddNoteModalOpen(false);
-    }
-  }, [currentSongId, createNote]);
+  const handleAddNote = useCallback(
+    (values: CreateNoteData) => {
+      if (currentSongId) {
+        createNote({ data: values });
+        setIsAddNoteModalOpen(false);
+      }
+    },
+    [currentSongId, createNote]
+  );
 
   const handleAddNoteCancel = useCallback(() => {
     setIsAddNoteModalOpen(false);
@@ -52,14 +61,16 @@ const InstrumentSelect = forwardRef<HTMLButtonElement>((_, ref) => {
 
   return (
     <div>
-      <Typography.Text strong style={{ fontSize: '16px' }} >Instruments Used</Typography.Text>
+      <Typography.Text strong style={{ fontSize: '16px' }}>
+        Instruments Used
+      </Typography.Text>
       <Row gutter={8} style={{ marginTop: '8px', marginBottom: '16px' }}>
         <Col span={22}>
           <Select
-            mode="multiple"
+            mode='multiple'
             allowClear
             style={{ width: '100%' }}
-            placeholder="Please select"
+            placeholder='Please select'
             value={selectedInstrumentIds}
             options={instrumentOptions}
             onSelect={onAddTrackInstrument}
@@ -70,7 +81,7 @@ const InstrumentSelect = forwardRef<HTMLButtonElement>((_, ref) => {
           <Button
             ref={ref}
             icon={<PlusCircleFilled />}
-            type="primary"
+            type='primary'
             onClick={() => setIsAddNoteModalOpen(true)}
             disabled={!tracksData || tracksData.length === 0}
           >
@@ -87,9 +98,9 @@ const InstrumentSelect = forwardRef<HTMLButtonElement>((_, ref) => {
         onCancel={handleAddNoteCancel}
       />
     </div>
-  )
+  );
 });
 
 InstrumentSelect.displayName = 'InstrumentSelect';
 
-export default InstrumentSelect
+export default InstrumentSelect;

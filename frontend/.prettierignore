@@ -1,0 +1,32 @@
+# Prettier ignore patterns
+node_modules/
+dist/
+build/
+coverage/
+*.min.js
+*.min.css
+
+# Package lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment files
+.env*
+
+# Logs
+*.log
+
+# Temporary files
+.tmp/
+.temp/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
