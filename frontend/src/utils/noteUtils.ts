@@ -7,19 +7,14 @@ export interface PendingNote {
 export function deduplicatePendingNotes(
   pendingAddedNotes: PendingNote[],
   pendingDeletedNotes: PendingNote[]
-): [PendingNote[], PendingNote[]] {
-  console.log({ pendingAddedNotes, pendingDeletedNotes });
-  // Create sets of cellIds for efficient lookup
+): { dedupedAddedNotes: PendingNote[], dedupedDeletedNotes: PendingNote[] } {
   const addedCellIds = new Set(pendingAddedNotes.map(note => note.cellId));
   const deletedCellIds = new Set(pendingDeletedNotes.map(note => note.cellId));
 
-  // Find common cellIds that exist in both arrays
   const commonCellIds = new Set([...addedCellIds].filter(cellId => deletedCellIds.has(cellId)));
 
-  // Remove items with common cellIds from both arrays
   const dedupedAddedNotes = pendingAddedNotes.filter(note => !commonCellIds.has(note.cellId));
-
   const dedupedDeletedNotes = pendingDeletedNotes.filter(note => !commonCellIds.has(note.cellId));
 
-  return [dedupedAddedNotes, dedupedDeletedNotes];
+  return { dedupedAddedNotes, dedupedDeletedNotes };
 }

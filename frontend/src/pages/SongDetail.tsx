@@ -14,7 +14,7 @@ import { colors } from '../utils/constants';
 import InstrumentSelect from '../components/SongEditor/InstrumentSelect';
 import PianoRollTour from '../components/PianoRollTour';
 import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
-import { useCreateNote, useDeleteNote, useNotes } from '../hooks/useNotes';
+import { useCreateMultipleNotes, useCreateNote, useDeleteMultipleNotes, useDeleteNote, useNotes } from '../hooks/useNotes';
 import { useTracks } from '../hooks/useTracks';
 import { useNoteEditStore } from '../stores/noteEditStore';
 import { deduplicatePendingNotes } from '../utils/noteUtils';
@@ -134,24 +134,30 @@ function SongDetail() {
   );
 
   const { pendingAddedNotes, pendingDeletedNotes } = useNoteEditStore();
+  const { mutate: createMultipleNotes } = useCreateMultipleNotes(currentSongId || '');
+  const { mutate: deleteMultipleNotes } = useDeleteMultipleNotes(currentSongId || ''); // Reusing useDeleteNote for multiple deletions
 
   const handleSubmit = () => {
-    const [uniqueAddedNotes, uniqueDeletedNotes] = deduplicatePendingNotes(
+    const { dedupedAddedNotes, dedupedDeletedNotes } = deduplicatePendingNotes(
       pendingAddedNotes,
       pendingDeletedNotes
     );
-    console.log({ pendingAddedNotes });
-    const addNoteRequestData = uniqueAddedNotes.map(note => ({
-      time: note.time,
+    const addNoteRequestData = dedupedAddedNotes.map(note => ({
+      time: note.note.time.split('s')[0],
       trackId: instrumentNameMapByTrackId.get(note.content.title || ''),
     }));
 
-    const deleteNoteIds = uniqueDeletedNotes
+    const deleteNoteIds = dedupedDeletedNotes
       .map(note => note.note.noteId)
       .filter((id): id is number => id !== undefined)
       .map(id => id.toString());
 
-    console.log({ addNoteRequestData, deleteNoteIds });
+    if (addNoteRequestData.length > 0) {
+      createMultipleNotes({ data: addNoteRequestData });
+    }
+    if (deleteNoteIds.length > 0) {
+      deleteMultipleNotes({ noteIds: deleteNoteIds });
+    }
   };
 
   return (

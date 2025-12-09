@@ -177,7 +177,7 @@ const TrackRoller: React.FC<TrackRollProps> = ({
   const onCellClick = useCallback(
     (rowIndex: number, columnIndex: number, cell?: CellData) => {
       const headerLabel = headers[columnIndex - 2];
-      const sidebarLabel = sidebarItems[rowIndex - 1];
+      const sidebarLabel = sidebarItems[rowIndex - 2];
 
       if (cell) {
         onNoteDelete(rowIndex, columnIndex, headerLabel, sidebarLabel, cell);

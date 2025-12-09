@@ -88,3 +88,15 @@ export const useDeleteNote = (songId: string) => {
     },
   });
 };
+
+export const useDeleteMultipleNotes = (songId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, { noteIds: string[] }>({
+    mutationFn: ({ noteIds }) => notesApi.deleteMultiple(songId, noteIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
+      queryClient.refetchQueries({ queryKey: noteKeys.list(songId) });
+    },
+  });
+};
