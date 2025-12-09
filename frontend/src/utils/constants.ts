@@ -29,3 +29,16 @@ export const theme = {
     },
   },
 };
+
+export const DEFAULT_HEADERS = [
+  'Header 1',
+  'Header 2',
+  'Header 3',
+  'Header 4',
+  'Header 5',
+  'Header 6',
+  'Header 7',
+  'Header 8',
+];
+
+export const DEFAULT_SIDEBAR_ITEMS = ['Row 1', 'Row 2', 'Row 3', 'Row 4', 'Row 5', 'Row 6'];

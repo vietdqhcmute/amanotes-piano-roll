@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notesApi } from '../utils/api';
 import type { Note, CreateNoteData, UpdateNoteData } from '../types/api';
 import useCustomNotification from '../context/Notification/useCustomNotification';
+import { useNoteEditStore } from '../stores/noteEditStore';
 
 export const noteKeys = {
   all: ['notes'] as const,
@@ -49,6 +50,7 @@ export const useCreateNote = (songId: string) => {
 };
 
 export const useCreateMultipleNotes = (songId: string) => {
+  const { setPendingAddedNotes } = useNoteEditStore();
   const { notifyError } = useCustomNotification();
   const queryClient = useQueryClient();
 
@@ -57,6 +59,7 @@ export const useCreateMultipleNotes = (songId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
       queryClient.refetchQueries({ queryKey: noteKeys.list(songId) });
+      setPendingAddedNotes([]);
     },
     onError: error => {
       notifyError(`Failed to create notes: ${error.message}`);
@@ -90,6 +93,8 @@ export const useDeleteNote = (songId: string) => {
 };
 
 export const useDeleteMultipleNotes = (songId: string) => {
+  const { setPendingDeletedNotes } = useNoteEditStore();
+
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, { noteIds: string[] }>({
@@ -97,6 +102,7 @@ export const useDeleteMultipleNotes = (songId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: noteKeys.list(songId) });
       queryClient.refetchQueries({ queryKey: noteKeys.list(songId) });
+      setPendingDeletedNotes([]);
     },
   });
 };

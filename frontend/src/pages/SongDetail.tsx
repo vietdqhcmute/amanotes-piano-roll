@@ -1,5 +1,5 @@
 import { Layout, Card, Row, Col, Statistic, Button } from 'antd';
-import TrackRoller, { type CellData } from '../components/SongEditor/TrackRoller';
+import TrackRoller from '../components/SongEditor/TrackRoller';
 import {
   convertNotesToCells,
   calculateTimeResolution,
@@ -14,7 +14,7 @@ import { colors } from '../utils/constants';
 import InstrumentSelect from '../components/SongEditor/InstrumentSelect';
 import PianoRollTour from '../components/PianoRollTour';
 import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
-import { useCreateMultipleNotes, useCreateNote, useDeleteMultipleNotes, useDeleteNote, useNotes } from '../hooks/useNotes';
+import { useCreateMultipleNotes, useDeleteMultipleNotes, useNotes } from '../hooks/useNotes';
 import { useTracks } from '../hooks/useTracks';
 import { useNoteEditStore } from '../stores/noteEditStore';
 import { deduplicatePendingNotes } from '../utils/noteUtils';
@@ -33,9 +33,6 @@ function SongDetail() {
   const { data: songData } = useSong(currentSongId || '');
   const { data: notesData } = useNotes(currentSongId || '');
   const { data: tracksData } = useTracks(currentSongId || '');
-
-  const { mutate: deleteNoteHandler } = useDeleteNote(currentSongId || '');
-  const { mutate: createNoteHandler } = useCreateNote(currentSongId || '');
 
   // Tour state and refs
   const [tourOpen, setTourOpen] = useState(false);
@@ -88,50 +85,6 @@ function SongDetail() {
     });
     return map;
   }, [tracksData]);
-
-  const handleAddNoteToEmptyCell = useCallback(
-    (rowNumber: number, _columnNumber: number, headerLabel?: string) => {
-      const selectedTrackId = instrumentNameMapByTrackId.get(headerLabel || '');
-      const time = (rowNumber - 2) * timeResolution; // -2 to convert back to 0-based time index
-      if (selectedTrackId !== undefined) {
-        createNoteHandler({
-          data: {
-            time,
-            trackId: selectedTrackId,
-          },
-        });
-      }
-    },
-    [createNoteHandler, instrumentNameMapByTrackId, timeResolution]
-  );
-
-  const handleDeleteNoteFromCell = useCallback(
-    (cell: CellData) => {
-      const note = cell.note;
-      if (!note) return;
-      if (note && note.noteId) {
-        deleteNoteHandler({ noteId: note.noteId.toString() });
-      }
-    },
-    [deleteNoteHandler]
-  );
-
-  const cellClickHandler = useCallback(
-    (
-      rowNumber: number,
-      columnNumber: number,
-      headerLabel?: string,
-      _sidebarLabel?: string,
-      cell?: CellData
-    ) => {
-      if (cell) {
-        handleDeleteNoteFromCell(cell);
-      } else {
-        handleAddNoteToEmptyCell(rowNumber, columnNumber, headerLabel);
-      }
-    },
-    [handleAddNoteToEmptyCell, handleDeleteNoteFromCell]
-  );
 
   const { pendingAddedNotes, pendingDeletedNotes } = useNoteEditStore();
   const { mutate: createMultipleNotes } = useCreateMultipleNotes(currentSongId || '');
@@ -210,7 +163,6 @@ function SongDetail() {
               headerColors={trackColors}
               sidebarItems={timeLabels}
               cells={cells}
-              onCellClick={cellClickHandler}
             />
           </div>
         )}

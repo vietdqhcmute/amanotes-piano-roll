@@ -1,69 +1,16 @@
 import React, { useCallback, useEffect, useMemo, type JSX } from 'react';
-import styled from 'styled-components';
 import Note from './Note';
-import { colors } from '../../utils/constants';
+import { colors, DEFAULT_HEADERS, DEFAULT_SIDEBAR_ITEMS } from '../../utils/constants';
 import { useNoteEditStore } from '../../stores/noteEditStore';
-
-const Grid = styled.div<{ columns: number; rows: number }>`
-  display: grid;
-  grid-template-columns: 50px repeat(${props => Math.min(props.columns - 1, 49)}, minmax(60px, 1fr));
-  grid-template-rows: repeat(${props => Math.min(props.rows, 100)}, 40px);
-  gap: 0;
-  overflow: auto;
-  max-height: 80vh;
-  max-width: 100vw;
-`;
-const Header = styled.div<{ headerCount: number }>`
-  grid-column: 2 / ${props => props.headerCount + 2};
-  grid-row: 1 / 2;
-  display: grid;
-  grid-template-columns: repeat(${props => props.headerCount}, 1fr);
-  gap: 0;
-`;
-const HeaderElement = styled.span`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Sidebar = styled.div<{ sidebarCount: number }>`
-  grid-column: 1 / 2;
-  grid-row: 2 / ${props => props.sidebarCount + 2};
-  display: grid;
-  grid-template-rows: repeat(${props => props.sidebarCount}, 1fr);
-  gap: 0;
-  max-width: 50px;
-`;
-const SidebarElement = styled.span<{ index: number }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Cell = styled.div<{ row: number; column: number; isActive?: boolean }>`
-  grid-column: ${props => props.column} / ${props => props.column + 1};
-  grid-row: ${props => props.row} / ${props => props.row + 1};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  border-bottom: ${props => {
-    const dataRowIndex = props.row - 3;
-    // Add dark border for every 10th row (multiples of 10)
-    return (dataRowIndex + 1) % 10 === 0 ? '2px solid #a5a5a5' : '1px solid #d9d9d9';
-  }};
-
-  &:hover {
-    background-color: ${props => (props.isActive ? colors.colorHighlight : '#e9e9e9')};
-  }
-`;
+import { Cell, Grid, Header, HeaderElement, Sidebar, SidebarElement } from './styles';
 
 export interface CellData {
+  cellId: string;
   rowNumber: number;
   columnNumber: number;
   content: CellContent;
   isActive?: boolean;
+  isTempNote?: boolean;
   onClick?: () => void;
   note?: {
     time: number;
@@ -89,33 +36,14 @@ interface TrackRollProps {
   headerColors?: string[];
   sidebarItems?: string[];
   cells?: CellData[];
-  onCellClick?: (
-    rowIndex: number,
-    columnIndex: number,
-    headerLabel?: string,
-    sidebarLabel?: string,
-    cell?: CellData
-  ) => void;
 }
 
-const DEFAULT_HEADERS = [
-  'Header 1',
-  'Header 2',
-  'Header 3',
-  'Header 4',
-  'Header 5',
-  'Header 6',
-  'Header 7',
-  'Header 8',
-];
-const DEFAULT_SIDEBAR_ITEMS = ['Row 1', 'Row 2', 'Row 3', 'Row 4', 'Row 5', 'Row 6'];
 
 const TrackRoller: React.FC<TrackRollProps> = ({
   headers = DEFAULT_HEADERS,
   headerColors = [],
   sidebarItems = DEFAULT_SIDEBAR_ITEMS,
   cells = [],
-  onCellClick: onCellClickProp,
 }) => {
   const { currentNotes } = useNoteEditStore();
   const {
@@ -147,7 +75,7 @@ const TrackRoller: React.FC<TrackRollProps> = ({
           time: sidebarLabel,
           track: columnIndex,
         },
-      };
+      } as unknown as CellData;
       addNote(newNote);
       addToPendingAddedNotes(newNote);
     },
@@ -158,11 +86,8 @@ const TrackRoller: React.FC<TrackRollProps> = ({
     (
       rowIndex: number,
       columnIndex: number,
-      headerLabel?: string,
-      sidebarLabel?: string,
       cell?: CellData
     ) => {
-      console.log({ cell });
       deleteNote(rowIndex, columnIndex);
       if (cell?.isActive) {
         addToPendingDeletedNotes(cell);
@@ -180,14 +105,10 @@ const TrackRoller: React.FC<TrackRollProps> = ({
       const sidebarLabel = sidebarItems[rowIndex - 2];
 
       if (cell) {
-        onNoteDelete(rowIndex, columnIndex, headerLabel, sidebarLabel, cell);
+        onNoteDelete(rowIndex, columnIndex, cell);
       } else {
         onNoteAdd(rowIndex, columnIndex, headerLabel, sidebarLabel);
       }
-
-      // if (onCellClickProp) {
-      // onCellClickProp(rowIndex, columnIndex, headerLabel, sidebarLabel, cell);
-      // }
     },
     [headers, onNoteAdd, onNoteDelete, sidebarItems]
   );
@@ -239,12 +160,9 @@ const TrackRoller: React.FC<TrackRollProps> = ({
   }, [cellsMap, onCellClick, totalColumns, totalRows]);
 
   useEffect(() => {
-    // console.log(cells)
     setCurrentNotes(cells);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cells]);
+  }, [cells, setCurrentNotes]);
 
-  // Early return if no data to prevent unnecessary rendering
   if (!headers.length || !sidebarItems.length) {
     return <div>No data to display</div>;
   }
