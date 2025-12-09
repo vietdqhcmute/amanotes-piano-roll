@@ -1,4 +1,4 @@
-import { Layout, Card, Row, Col, Statistic, Button } from 'antd';
+import { Layout, Card, Row, Col, Statistic } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
 import TrackRoller from '../components/SongEditor/TrackRoller';
 import {
@@ -19,6 +19,7 @@ import { useCreateMultipleNotes, useDeleteMultipleNotes, useNotes } from '../hoo
 import { useTracks } from '../hooks/useTracks';
 import { useNoteEditStore } from '../stores/noteEditStore';
 import { deduplicatePendingNotes } from '../utils/noteUtils';
+import type { CreateNoteData } from '../types/api';
 
 export interface NotesOutputProps {
   noteId: number;
@@ -88,8 +89,8 @@ function SongDetail() {
   }, [tracksData]);
 
   const { pendingAddedNotes, pendingDeletedNotes } = useNoteEditStore();
-  const { mutate: createMultipleNotes, isLoading: isCreatingMultiple } = useCreateMultipleNotes(currentSongId || '');
-  const { mutate: deleteMultipleNotes, isLoading: isDeletingMultiple } = useDeleteMultipleNotes(currentSongId || ''); // Reusing useDeleteNote for multiple deletions
+  const { mutate: createMultipleNotes } = useCreateMultipleNotes(currentSongId || '');
+  const { mutate: deleteMultipleNotes } = useDeleteMultipleNotes(currentSongId || ''); // Reusing useDeleteNote for multiple deletions
 
   const handleSubmitUpdateNotes = () => {
     const { dedupedAddedNotes, dedupedDeletedNotes } = deduplicatePendingNotes(
@@ -107,7 +108,7 @@ function SongDetail() {
       .map(id => id.toString());
 
     if (addNoteRequestData.length > 0) {
-      createMultipleNotes({ data: addNoteRequestData });
+      createMultipleNotes({ data: addNoteRequestData as CreateNoteData[] });
     }
     if (deleteNoteIds.length > 0) {
       deleteMultipleNotes({ noteIds: deleteNoteIds });
